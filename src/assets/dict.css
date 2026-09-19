@@ -10,9 +10,6 @@
   display: flex; flex-direction: column; gap: 14px; margin-top: 24px; font-size: 16.5px; line-height: 1.65; color: var(--text-2);
 }
 :root[data-theme="dark"] .dict { --d-flag: #d28d80; --d-flag-soft: #2a1d1a; --d-amb: #d0b475; --d-amb-soft: #25211a; --d-grn: #8cbfa3; --d-grn-soft: #182420; }
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) .dict { --d-flag: #d28d80; --d-flag-soft: #2a1d1a; --d-amb: #d0b475; --d-amb-soft: #25211a; --d-grn: #8cbfa3; --d-grn-soft: #182420; }
-}
 .dict a { color: var(--d-accent-ink); }
 .dict h2, .dict h3 { color: var(--text); }
 .dict .sheet{scrollbar-color:var(--thumb) var(--track)}

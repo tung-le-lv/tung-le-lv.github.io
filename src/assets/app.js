@@ -4,7 +4,7 @@ const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 const root = document.documentElement;
 const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)');
-const isDark = () => root.dataset.theme ? root.dataset.theme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+const isDark = () => root.dataset.theme === 'dark'; // light is the default; dark only by explicit choice
 
 /* ---------------- Theme ---------------- */
 $('.theme-btn').addEventListener('click', () => {

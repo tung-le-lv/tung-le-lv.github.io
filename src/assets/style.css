@@ -36,13 +36,6 @@
   --brand-2: #67e8f9;
   color-scheme: dark;
 }
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --bg: #0b0d12; --surface: #12151c; --surface-2: #181c25; --text: #e8ebf2; --text-2: #b4bccb;
-    --muted: #8892a4; --border: #232836; --shadow: 0 1px 2px rgb(0 0 0 / .3), 0 8px 24px -12px rgb(0 0 0 / .6);
-    --shadow-lg: 0 24px 60px -20px rgb(0 0 0 / .8); --code-bg: #0f1218; --brand: #38bdf8; --brand-2: #67e8f9; color-scheme: dark;
-  }
-}
 
 /* ---------- Base ---------- */
 *, *::before, *::after { box-sizing: border-box; }
@@ -91,10 +84,6 @@ kbd { font: 500 11px var(--mono); padding: 2px 6px; border: 1px solid var(--bord
 .i-moon { display: none; }
 :root[data-theme="dark"] .i-sun { display: none; }
 :root[data-theme="dark"] .i-moon { display: inline-flex; }
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) .i-sun { display: none; }
-  :root:not([data-theme="light"]) .i-moon { display: inline-flex; }
-}
 
 /* ---------- Shell / sidebar ---------- */
 .shell { display: grid; grid-template-columns: var(--sidebar) minmax(0, 1fr); max-width: 1560px; margin: 0 auto; }
@@ -253,12 +242,6 @@ kbd { font: 500 11px var(--mono); padding: 2px 6px; border: 1px solid var(--bord
 :root[data-theme="dark"] :is(.hljs-string, .hljs-regexp) { color: #6ee7b7; }
 :root[data-theme="dark"] :is(.hljs-number, .hljs-attr, .hljs-attribute) { color: #fbbf6b; }
 :root[data-theme="dark"] :is(.hljs-title, .hljs-built_in, .hljs-type) { color: #7db4ff; }
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) :is(.hljs-keyword, .hljs-literal) { color: #b79cff; }
-  :root:not([data-theme="light"]) :is(.hljs-string, .hljs-regexp) { color: #6ee7b7; }
-  :root:not([data-theme="light"]) :is(.hljs-number, .hljs-attr, .hljs-attribute) { color: #fbbf6b; }
-  :root:not([data-theme="light"]) :is(.hljs-title, .hljs-built_in, .hljs-type) { color: #7db4ff; }
-}
 
 /* Diagrams */
 .diagram { margin: 1.6em 0; padding: 22px; overflow-x: auto; text-align: center; border: 1px solid var(--border); border-radius: 12px; background: var(--surface); }

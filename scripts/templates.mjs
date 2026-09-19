@@ -87,8 +87,7 @@ ${o.noindex ? '<meta name="robots" content="noindex">' : `<link rel="canonical" 
 <meta property="og:description" content="${esc(o.description)}">
 <meta property="og:type" content="${o.kind === 'article' ? 'article' : 'website'}">
 <meta property="og:url" content="${esc(url)}">
-<meta name="theme-color" content="#0b0d12" media="(prefers-color-scheme: dark)">
-<meta name="theme-color" content="#fbfbfd" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#fbfbfd">
 <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
