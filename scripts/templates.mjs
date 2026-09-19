@@ -65,7 +65,7 @@ function sidebar(ctx, cur) {
 export function page(ctx, o) {
   const { site, v } = ctx;
   const url = site.url + o.path;
-  const accent = o.cat?.color ?? '#6366f1';
+  const accent = o.cat?.color ?? '#0284c7';
   return `<!doctype html>
 <html lang="en">
 <head>
@@ -213,14 +213,14 @@ ${a.html}
 export function tagsView(ctx) {
   return `
 <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a><span>/</span><span>Tags</span></nav>
-<header class="page-head"><span class="cat-ico big" style="--c:#6366f1">${icon('tag')}</span><div><h1>Tags</h1><p class="lede">Every topic across the knowledge base.</p></div></header>
+<header class="page-head"><span class="cat-ico big" style="--c:#0ea5e9">${icon('tag')}</span><div><h1>Tags</h1><p class="lede">Every topic across the knowledge base.</p></div></header>
 <div class="chips big">${ctx.tags.map((t) => `<a class="chip" href="/tags/${t.slug}/">${icon('tag')}${esc(t.name)}<span class="chip-n">${t.articles.length}</span></a>`).join('')}</div>`;
 }
 
 export function tagView(ctx, t) {
   return `
 <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a><span>/</span><a href="/tags/">Tags</a><span>/</span><span>${esc(t.name)}</span></nav>
-<header class="page-head"><span class="cat-ico big" style="--c:#6366f1">${icon('tag')}</span><div><h1>#${esc(t.name)}</h1><p class="lede">${count(t.articles.length, 'article')} tagged “${esc(t.name)}”.</p></div></header>
+<header class="page-head"><span class="cat-ico big" style="--c:#0ea5e9">${icon('tag')}</span><div><h1>#${esc(t.name)}</h1><p class="lede">${count(t.articles.length, 'article')} tagged “${esc(t.name)}”.</p></div></header>
 <div class="grid articles">${t.articles.map((a) => articleCard(ctx, a, { showCat: true })).join('')}</div>`;
 }
 

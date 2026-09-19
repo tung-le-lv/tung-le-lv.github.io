@@ -83,7 +83,7 @@ async function renderDiagrams() {
   const dark = isDark();
   mermaid.initialize({
     startOnLoad: false, theme: dark ? 'dark' : 'neutral', fontFamily: 'Inter, system-ui, sans-serif',
-    themeVariables: dark ? { primaryColor: '#1e2433', primaryBorderColor: '#6366f1', lineColor: '#8892a4', primaryTextColor: '#e8ebf2' } : { primaryColor: '#eef0ff', primaryBorderColor: '#6366f1' },
+    themeVariables: dark ? { primaryColor: '#1e2433', primaryBorderColor: '#0ea5e9', lineColor: '#8892a4', primaryTextColor: '#e8ebf2' } : { primaryColor: '#e0f4ff', primaryBorderColor: '#0ea5e9' },
   });
   for (const n of nodes) { n.removeAttribute('data-processed'); n.textContent = n.dataset.src; }
   try { await mermaid.run({ nodes }); } catch (e) { console.warn('mermaid', e); }
