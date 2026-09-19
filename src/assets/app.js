@@ -68,6 +68,9 @@ function initPage() {
   }
   $$('.toc-inline a', content).forEach((a) => a.addEventListener('click', () => (a.closest('details').open = false)));
 
+  // progress bar takes the current category's colour
+  bar.style.setProperty('--bar', content.style.getPropertyValue('--accent') || '');
+
   renderDiagrams();
   onScroll();
 }
