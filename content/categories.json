@@ -1,0 +1,37 @@
+[
+  {
+    "slug": "architecture",
+    "title": "Architecture",
+    "icon": "layers",
+    "color": "#6366f1",
+    "description": "Principles, styles, trade-offs and decision-making for designing software systems."
+  },
+  {
+    "slug": "microservices",
+    "title": "Microservices",
+    "icon": "grid",
+    "color": "#0ea5e9",
+    "description": "Decomposition, service boundaries, communication, data ownership and operating distributed systems."
+  },
+  {
+    "slug": "event-driven-architecture",
+    "title": "Event-Driven Architecture",
+    "icon": "zap",
+    "color": "#f59e0b",
+    "description": "Events, messaging, sagas, event sourcing and building loosely coupled, reactive systems."
+  },
+  {
+    "slug": "domain-driven-design",
+    "title": "Domain-Driven Design",
+    "icon": "cube",
+    "color": "#10b981",
+    "description": "Strategic and tactical DDD: bounded contexts, ubiquitous language, aggregates and context mapping."
+  },
+  {
+    "slug": "ai-driven-development",
+    "title": "AI-Driven Development",
+    "icon": "sparkles",
+    "color": "#d946ef",
+    "description": "Engineering practices for building software with AI agents: harnesses, guardrails and workflows."
+  }
+]
