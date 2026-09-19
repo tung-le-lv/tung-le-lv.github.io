@@ -30,6 +30,7 @@ function syncSidebar() {
   const cat = path.split('/')[1];
   const det = $(`#sidebar .nav-cat[data-cat="${CSS.escape(cat)}"]`);
   if (det) det.open = true;
+  for (let d = active?.closest('details'); d; d = d.parentElement?.closest('details')) d.open = true;
   if (active) {
     const box = $('#sidebar'), r = active.getBoundingClientRect(), b = box.getBoundingClientRect();
     if (r.top < b.top || r.bottom > b.bottom) active.scrollIntoView({ block: 'center', behavior: reduceMotion.matches ? 'auto' : 'smooth' });

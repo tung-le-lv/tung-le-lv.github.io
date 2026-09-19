@@ -1,10 +1,10 @@
 [
   {
-    "slug": "architecture",
-    "title": "Architecture",
-    "icon": "layers",
-    "color": "#3b82f6",
-    "description": "Principles, styles, trade-offs and decision-making for designing software systems."
+    "slug": "architect",
+    "title": "Architect",
+    "icon": "compass",
+    "color": "#8b5cf6",
+    "description": "The software architect's diagram dictionary: 110 diagram types — which to draw, when, and what it must show."
   },
   {
     "slug": "microservices",

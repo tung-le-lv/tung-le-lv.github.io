@@ -24,6 +24,7 @@ const ICONS = {
   external: '<path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/>',
   clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
   tag: '<path d="M3 12V4a1 1 0 0 1 1-1h8l9 9-9 9-9-9Z"/><path d="M7.5 7.5h.01"/>',
+  compass: '<circle cx="12" cy="12" r="9"/><path d="m15.5 8.5-2 5-5 2 2-5 5-2Z"/>',
   list: '<path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>',
 };
 
@@ -37,12 +38,20 @@ const tagChip = (t) => `<a class="chip" href="/tags/${t.slug ?? t}/">${icon('tag
 const tagLinks = (ctx, names) => names.map((n) => tagChip(ctx.tags.find((t) => t.name === n))).join('');
 
 // ---------- Layout ----------
+const contains = (n, a) => !!a && (n.articles.includes(a) || n.children.some((c) => contains(c, a)));
+const navLink = (a) => `<a class="nav-link" href="${a.url}" data-path="${a.url}">${esc(a.title)}</a>`;
+function navNodes(n, cur, openAll) {
+  return n.articles.map(navLink).join('') + n.children.map((ch) => `
+        <details class="nav-sub"${openAll || contains(ch, cur) ? ' open' : ''}>
+          <summary>${icon('chevron', 'nav-chev')}<span>${esc(ch.name)}</span></summary>
+          <div class="nav-sub-items">${navNodes(ch, cur, openAll)}</div>
+        </details>`).join('');
+}
+
 function sidebar(ctx, cur) {
   const groups = ctx.categories.map((c) => {
     const open = cur.cat?.slug === c.slug;
-    const items = c.groups.map((g) => `
-        ${g.name ? `<div class="nav-section">${esc(g.name)}</div>` : ''}
-        ${g.articles.map((a) => `<a class="nav-link" href="${a.url}" data-path="${a.url}">${esc(a.title)}</a>`).join('')}`).join('');
+    const items = navNodes(c.tree, cur.article, open && !cur.article);
     return `
     <details class="nav-cat" style="--c:${c.color}" data-cat="${c.slug}"${open ? ' open' : ''}>
       <summary><span class="nav-ico">${icon(c.icon)}</span><span class="nav-title">${esc(c.title)}</span><span class="nav-count">${c.articles.length}</span>${icon('chevron', 'nav-chev')}</summary>
@@ -86,6 +95,7 @@ ${o.noindex ? '<meta name="robots" content="noindex">' : `<link rel="canonical" 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script>try{var t=localStorage.getItem('theme');if(t)document.documentElement.dataset.theme=t}catch(e){}</script>
 <link rel="stylesheet" href="/assets/style.css?v=${v}">
+<link rel="stylesheet" href="/assets/dict.css?v=${v}">
 <script type="module" src="/assets/app.js?v=${v}"></script>
 </head>
 <body>
@@ -160,11 +170,13 @@ export function homeView(ctx) {
 }
 
 export function categoryView(ctx, c) {
-  const body = c.groups.length
-    ? c.groups.map((g) => `
+  const sections = [];
+  (function walk(n) { if (n.articles.length) sections.push(n); n.children.forEach(walk); })(c.tree);
+  const body = sections.length
+    ? sections.map((n) => `
       <section>
-        ${g.name ? `<h2 class="section-title">${esc(g.name)}</h2>` : ''}
-        <div class="grid articles">${g.articles.map((a) => articleCard(ctx, a)).join('')}</div>
+        ${n.path.length ? `<h2 class="section-title">${esc(n.path.join(' › '))}</h2>` : ''}
+        <div class="grid articles">${n.articles.map((a) => articleCard(ctx, a)).join('')}</div>
       </section>`).join('')
     : `<div class="empty">${icon(c.icon)}<h3>Articles are on their way</h3><p>Nothing published in ${esc(c.title)} yet — check back soon.</p></div>`;
   return `
@@ -187,19 +199,18 @@ export function articleView(ctx, a) {
   return `
 <div class="article-layout" ${a.hasMermaid ? 'data-mermaid' : ''}>
   <article class="article">
-    <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a><span>/</span><a href="/${c.slug}/">${esc(c.title)}</a>${a.section ? `<span>/</span><span>${esc(a.section)}</span>` : ''}</nav>
+    <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a><span>/</span><a href="/${c.slug}/">${esc(c.title)}</a>${a.path.map((p) => `<span>/</span><span>${esc(p)}</span>`).join('')}</nav>
     <header class="article-head">
       <h1>${esc(a.title)}</h1>
       ${a.description ? `<p class="lede">${esc(a.description)}</p>` : ''}
       <div class="meta">
         <span>${icon('clock')}${a.readingMinutes} min read</span>
         ${a.updated ? `<span>Updated ${fmt(a.updated)}</span>` : ''}
-        ${a.source ? `<a href="${esc(a.source)}" target="_blank" rel="noopener noreferrer">${icon('external')}${esc(a.sourceTitle || 'Source')}</a>` : ''}
       </div>
       ${a.tags.length ? `<div class="chips">${tagLinks(ctx, a.tags)}</div>` : ''}
     </header>
     ${a.toc.length ? `<details class="toc-inline"><summary>${icon('list')}On this page</summary><div>${tocLinks}</div></details>` : ''}
-    <div class="prose">
+    <div class="${a.raw ? 'dict' : 'prose'}">
 ${a.html}
     </div>
     <footer class="article-foot">

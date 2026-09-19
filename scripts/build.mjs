@@ -80,13 +80,21 @@ function renderMarkdown(md) {
   return { html, toc, hasMermaid, text: stripTags(html).replace(/\s+/g, ' ').trim() };
 }
 
+// Raw HTML articles: body is used as-is; headings that carry an id feed the TOC.
+function renderRawHtml(html) {
+  const toc = [...html.matchAll(/<h([23])\b[^>]*\bid="([^"]+)"[^>]*>(.*?)<\/h\1>/gs)]
+    .map((m) => ({ depth: Number(m[1]), id: m[2], text: stripTags(m[3]) }));
+  const text = stripTags(html.replace(/<svg[\s\S]*?<\/svg>/g, ' ')).replace(/\s+/g, ' ').trim();
+  return { html, toc, hasMermaid: false, text };
+}
+
 // ---------- Load content ----------
 async function walk(dir) {
   const out = [];
   for (const e of await readdir(dir, { withFileTypes: true })) {
     const p = path.join(dir, e.name);
     if (e.isDirectory()) out.push(...(await walk(p)));
-    else if (e.name.endsWith('.md')) out.push(p);
+    else if (e.name.endsWith('.md') || e.name.endsWith('.html')) out.push(p);
   }
   return out;
 }
@@ -106,8 +114,9 @@ async function loadSite() {
     if (!cat) throw new Error(`${rel.join('/')}: folder "${catSlug}" is not declared in content/categories.json`);
     const { data, content } = matter(await readFile(file, 'utf8'));
     if (!data.title) throw new Error(`${rel.join('/')}: missing "title" in front matter`);
-    const slug = slugify(path.basename(file, '.md'));
-    const rendered = renderMarkdown(content);
+    const slug = slugify(path.basename(file).replace(/\.(md|html)$/, ''));
+    const raw = file.endsWith('.html'); // hand-authored/imported HTML article (front matter: layout: raw)
+    const rendered = raw ? renderRawHtml(content) : renderMarkdown(content);
     const words = rendered.text.split(' ').length;
     const article = {
       title: data.title,
@@ -116,9 +125,8 @@ async function loadSite() {
       updated: fmtDate(data.updated ?? data.date),
       section: data.section || '',
       order: data.order ?? 1000,
-      source: data.source || '',
-      sourceTitle: data.sourceTitle || '',
       draft: !!data.draft,
+      raw,
       slug,
       category: cat,
       url: `/${cat.slug}/${slug}/`,
@@ -136,14 +144,22 @@ async function loadSite() {
 
   for (const cat of bySlug.values()) {
     cat.articles.sort((a, b) => a.order - b.order || a.title.localeCompare(b.title));
-    // group by section (unsectioned first), preserving article order
-    const groups = new Map();
+    // Nested sub-categories: front matter `section: "Parent / Child"`. Children appear in the order
+    // of their first (lowest-`order`) article; articles with no section come first.
+    const root = { name: '', path: [], articles: [], children: [] };
     for (const a of cat.articles) {
-      if (!groups.has(a.section)) groups.set(a.section, []);
-      groups.get(a.section).push(a);
+      a.path = a.section ? a.section.split('/').map((p) => p.trim()).filter(Boolean) : [];
+      let node = root;
+      for (const name of a.path) {
+        let child = node.children.find((c) => c.name === name);
+        if (!child) node.children.push((child = { name, path: [...node.path, name], articles: [], children: [] }));
+        node = child;
+      }
+      node.articles.push(a);
     }
-    cat.groups = [...groups.entries()].sort(([a], [b]) => (a === '' ? -1 : b === '' ? 1 : a.localeCompare(b))).map(([name, articles]) => ({ name, articles }));
-    cat.articles = cat.groups.flatMap((g) => g.articles); // navigation order = display order
+    const flatten = (n) => [...n.articles, ...n.children.flatMap(flatten)];
+    cat.tree = root;
+    cat.articles = flatten(root); // navigation order = display order
   }
   const all = [...bySlug.values()].flatMap((c) => c.articles).sort((a, b) => b.updated.localeCompare(a.updated));
   return { site, categories: [...bySlug.values()], tags: [...tags.values()].sort((a, b) => b.articles.length - a.articles.length || a.name.localeCompare(b.name)), all };
@@ -158,7 +174,7 @@ async function emit(file, html) {
 
 async function assetVersion() {
   const h = createHash('sha1');
-  for (const f of ['style.css', 'app.js']) h.update(await readFile(path.join(SRC, 'assets', f)));
+  for (const f of ['style.css', 'dict.css', 'app.js']) h.update(await readFile(path.join(SRC, 'assets', f)));
   return h.digest('hex').slice(0, 8);
 }
 

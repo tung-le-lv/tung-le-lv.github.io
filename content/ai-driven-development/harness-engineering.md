@@ -3,8 +3,6 @@ title: Harness Engineering
 description: Why the future of AI-assisted development is less about better prompts and more about the guides, sensors and feedback loops built around the agent.
 tags: [ai-agents, harness, feedback-loops, architecture-fitness]
 updated: 2026-08-14
-source: https://martinfowler.com/articles/harness-engineering.html
-sourceTitle: Harness Engineering — Martin Fowler
 order: 1
 ---
 
@@ -189,3 +187,7 @@ flowchart TD
 ```
 
 The harness **reduces the amount of human review required while increasing confidence in the result** — the central thesis of the article.
+
+## References
+
+- [Harness Engineering — Martin Fowler](https://martinfowler.com/articles/harness-engineering.html)

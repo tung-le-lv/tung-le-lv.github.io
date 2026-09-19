@@ -120,6 +120,13 @@ kbd { font: 500 11px var(--mono); padding: 2px 6px; border: 1px solid var(--bord
 .nav-cat[open] .nav-chev { transform: rotate(90deg); }
 .nav-items { display: flex; flex-direction: column; margin: 4px 0 8px 24px; padding-left: 10px; border-left: 1px solid var(--border); }
 .nav-overview { font-weight: 500; }
+.nav-sub summary { list-style: none; display: flex; align-items: center; gap: 6px; padding: 6px 8px; margin-top: 4px; border-radius: 8px; cursor: pointer; user-select: none; font: 600 11px var(--sans); letter-spacing: .07em; text-transform: uppercase; color: var(--muted); }
+.nav-sub summary::-webkit-details-marker { display: none; }
+.nav-sub summary:hover { background: var(--surface-2); color: var(--text); }
+.nav-sub[open] > summary .nav-chev { transform: rotate(90deg); }
+.nav-sub summary .nav-chev { width: 13px; height: 13px; }
+.nav-sub-items { display: flex; flex-direction: column; margin-left: 6px; padding-left: 8px; border-left: 1px solid var(--border); }
+.nav-sub .nav-sub { margin-left: 0; }
 .nav-section { margin: 10px 12px 2px; font: 600 11px var(--sans); letter-spacing: .07em; text-transform: uppercase; color: var(--muted); }
 .nav-empty { padding: 6px 12px; font-size: 13px; color: var(--muted); font-style: italic; }
 .scrim { display: none; }
@@ -221,7 +228,7 @@ kbd { font: 500 11px var(--mono); padding: 2px 6px; border: 1px solid var(--bord
 .prose blockquote { margin: 1.4em 0; padding: .2em 1.2em; border-left: 3px solid var(--accent); background: color-mix(in srgb, var(--accent) 6%, transparent); border-radius: 0 10px 10px 0; color: var(--text); }
 .prose blockquote p { margin: .5em 0; }
 .prose :not(pre) > code { padding: .15em .4em; border: 1px solid var(--border); border-radius: 6px; background: var(--code-bg); font: 500 .86em var(--mono); color: var(--text); }
-.prose img { max-width: 100%; border-radius: 12px; }
+.prose img { display: block; max-width: 100%; height: auto; margin: 1.6em auto; padding: 10px; background: #fff; border: 1px solid var(--border); border-radius: 12px; }
 
 .table-wrap { margin: 1.5em 0; overflow-x: auto; border: 1px solid var(--border); border-radius: 12px; background: var(--surface); }
 .prose table { width: 100%; border-collapse: collapse; font-size: 15px; }

@@ -1,0 +1,161 @@
+/* Styles for imported "diagram dictionary" pages (layout: raw). Generated from the original
+   site.css, scoped under .dict and re-themed onto the wiki's colour tokens. */
+.dict {
+  --d-paper: var(--surface-2); --d-surface: var(--surface); --d-ink: var(--text); --d-ink2: var(--text-2);
+  --d-muted: var(--muted); --d-line: var(--border); --d-hair: color-mix(in srgb, var(--border) 55%, transparent);
+  --d-accent: var(--accent); --d-accent-ink: var(--accent); --d-accent-soft: color-mix(in srgb, var(--accent) 12%, transparent);
+  --d-flag: #a8443a; --d-flag-soft: #f6e9e6; --d-amb: #7a5c1f; --d-amb-soft: #f4eedf; --d-grn: #33604a; --d-grn-soft: #e4eee8;
+  --d-plate: #ffffff; --d-plate-line: #dee3e7; --d-shadow: 0 1px 2px rgb(20 30 40 / .06);
+  --d-hdr: 76px; --d-disp: var(--sans); --d-sans: var(--sans); --d-mono: var(--mono);
+  display: flex; flex-direction: column; gap: 14px; margin-top: 24px; font-size: 16.5px; line-height: 1.65; color: var(--text-2);
+}
+:root[data-theme="dark"] .dict { --d-flag: #d28d80; --d-flag-soft: #2a1d1a; --d-amb: #d0b475; --d-amb-soft: #25211a; --d-grn: #8cbfa3; --d-grn-soft: #182420; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .dict { --d-flag: #d28d80; --d-flag-soft: #2a1d1a; --d-amb: #d0b475; --d-amb-soft: #25211a; --d-grn: #8cbfa3; --d-grn-soft: #182420; }
+}
+.dict a { color: var(--d-accent-ink); }
+.dict h2, .dict h3 { color: var(--text); }
+.dict .sheet{scrollbar-color:var(--thumb) var(--track)}
+.dict{display:flex;flex-direction:column;gap:14px}
+.dict .dgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(252px,1fr));gap:12px;margin:0}
+.dict a.dcard{display:block;text-decoration:none;background:var(--d-surface);border:1px solid var(--d-line);
+  border-radius:4px;padding:15px 16px 16px;box-shadow:var(--d-shadow)}
+.dict a.dcard:hover{border-color:var(--d-accent)}
+.dict a.dcard .cn{font-family:var(--d-mono);font-size:10px;color:var(--d-muted);letter-spacing:.08em}
+.dict a.dcard h3{font-family:var(--d-disp);font-weight:700;font-size:16.5px;margin:3px 0 5px;
+  color:var(--d-ink);line-height:1.2}
+.dict a.dcard:hover h3{color:var(--d-accent-ink)}
+.dict a.dcard p{margin:0;font-size:12.8px;color:var(--d-muted);line-height:1.5}
+.dict a.dcard .k{font-family:var(--d-mono);font-size:10px;color:var(--d-accent-ink);margin-top:9px;display:block}
+.dict .sect{font-family:var(--d-mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--d-muted);margin:20px 0 2px}
+.dict .qwrap{background:var(--d-surface);border:1px solid var(--d-line);border-radius:4px;
+  padding:18px 20px 16px;box-shadow:var(--d-shadow)}
+.dict .qwrap>p{font-family:var(--d-mono);font-size:9.5px;letter-spacing:.11em;text-transform:uppercase;
+  color:var(--d-muted);margin:0 0 11px}
+.dict .qgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1px 26px;margin:0}
+.dict .qgrid a{display:flex;gap:10px;align-items:baseline;justify-content:space-between;
+  text-decoration:none;padding:5px 6px;border-radius:3px;border-bottom:1px solid var(--d-hair)}
+.dict .qgrid a:hover{background:var(--d-accent-soft)}
+.dict .qgrid .q{color:var(--d-ink2);font-size:13.2px}
+.dict .qgrid .d{font-family:var(--d-disp);font-weight:600;font-size:12.5px;color:var(--d-accent-ink);
+  white-space:nowrap}
+.dict .freq{background:var(--d-surface);border:1px solid var(--d-line);border-radius:4px;
+  box-shadow:var(--d-shadow);overflow:hidden}
+.dict .freq p.flead{margin:0;padding:14px 20px;font-size:13.4px;color:var(--d-ink2);line-height:1.55;
+  border-bottom:1px solid var(--d-line);background:var(--d-paper)}
+.dict .freq section{padding:15px 20px 17px;border-top:1px solid var(--d-hair)}
+.dict .freq section:first-of-type{border-top:0}
+.dict .freq h3{font-family:var(--d-disp);font-weight:700;font-size:15px;margin:0;color:var(--d-ink);
+  line-height:1.25}
+.dict .freq .gsub{margin:2px 0 11px;font-size:12.6px;color:var(--d-muted);max-width:80ch;line-height:1.5}
+.dict .freq ul{list-style:none;margin:0;padding:0;display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:0 24px}
+.dict .freq li{padding:6px 0;border-top:1px solid var(--d-hair);font-size:13px;line-height:1.5;
+  color:var(--d-ink2)}
+.dict .freq li a{font-family:var(--d-disp);font-weight:600;font-size:13.4px;text-decoration:none;
+  color:var(--d-accent-ink)}
+.dict .freq li a:hover{text-decoration:underline}
+.dict .freq li b.off{font-family:var(--d-disp);font-weight:600;font-size:13.4px;color:var(--d-ink2)}
+.dict .freq li .d{color:var(--d-muted);font-size:12.5px}
+.dict .freq p.bar{margin:0;padding:14px 20px;background:var(--d-accent-soft);
+  border-top:1px solid var(--d-line);font-size:13.4px;color:var(--d-ink2);line-height:1.55}
+.dict .freq p.bar b{color:var(--d-accent-ink);font-weight:700}
+.dict article.entry{background:var(--d-surface);border:1px solid var(--d-line);border-radius:4px;
+  padding:24px 26px 26px;box-shadow:var(--d-shadow);scroll-margin-top:calc(var(--d-hdr) + 16px)}
+.dict article.entry.flash{border-color:var(--d-accent);box-shadow:0 0 0 2px var(--d-accent-soft),var(--d-shadow)}
+.dict .ehead{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:3px}
+.dict h2.name{font-family:var(--d-disp);font-weight:700;font-size:23px;letter-spacing:.004em;margin:0;
+  text-wrap:balance;line-height:1.15}
+.dict .catline{font-family:var(--d-mono);font-size:10.5px;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--d-muted);margin:0 0 12px}
+.dict .catline a{color:var(--d-muted);text-decoration:none}
+.dict .catline a:hover{color:var(--d-accent-ink)}
+.dict .catline .shown{margin-left:8px;padding:1px 6px;border:1px solid var(--d-line);border-radius:2px;
+  color:var(--d-muted);letter-spacing:.06em}
+.dict p.defn{margin:0 0 18px;max-width:70ch;font-size:15px;color:var(--d-ink2)}
+.dict ul.alias{list-style:none;display:flex;flex-wrap:wrap;gap:6px;margin:0 0 20px;padding:0}
+.dict ul.alias li{font-family:var(--d-mono);font-size:10px;color:var(--d-muted);border:1px solid var(--d-hair);
+  background:var(--d-paper);border-radius:2px;padding:2px 7px}
+.dict ul.alias li.lab{border-color:transparent;background:none;letter-spacing:.08em;text-transform:uppercase}
+.dict ul.alias.aud{margin-bottom:10px}
+.dict ul.alias.aud li{border-color:var(--d-line);padding:0}
+.dict ul.alias.aud li.lab{border-color:transparent;padding:2px 7px}
+.dict ul.alias.aud a{display:block;padding:2px 8px;text-decoration:none;color:var(--d-ink2);
+  font-family:var(--d-sans);font-size:11px;font-weight:500}
+.dict ul.alias.aud a:hover{color:var(--d-accent-ink);background:var(--d-accent-soft)}
+.dict ul.alias.aud li.pri{border-color:var(--d-accent);background:var(--d-accent-soft)}
+.dict ul.alias.aud li.pri a{color:var(--d-accent-ink);font-weight:700}
+.dict a.dcard.dacard{border-left:3px solid var(--d-accent)}
+.dict .canon{background:var(--d-surface);border:1px solid var(--d-line);border-radius:4px;
+  padding:18px 20px 16px;box-shadow:var(--d-shadow)}
+.dict .canon>h2{font-family:var(--d-disp);font-weight:700;font-size:17px;margin:0 0 4px}
+.dict .canon>p{margin:0 0 14px;font-size:13.2px;color:var(--d-muted);max-width:74ch}
+.dict .canoncols{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px}
+.dict .canoncols h3{font-family:var(--d-mono);font-size:9.5px;letter-spacing:.11em;text-transform:uppercase;
+  color:var(--d-muted);margin:0 0 8px;font-weight:600}
+.dict .canoncols ol{margin:0;padding:0;list-style:none;counter-reset:u}
+.dict .canoncols li{counter-increment:u;margin-bottom:1px}
+.dict .canoncols a{display:flex;gap:8px;align-items:baseline;text-decoration:none;color:var(--d-ink2);
+  font-size:13.2px;padding:3px 6px;border-radius:3px}
+.dict .canoncols a::before{content:counter(u);font-family:var(--d-mono);font-size:9.5px;
+  color:var(--d-muted);min-width:12px;text-align:right}
+.dict .canoncols a:hover{background:var(--d-accent-soft);color:var(--d-accent-ink)}
+.dict .canoncols .away{font-family:var(--d-mono);font-size:9.5px;color:var(--d-muted);margin-left:auto;
+  white-space:nowrap}
+.dict a.dcard.dacard .who{display:block;font-size:11.5px;color:var(--d-ink2);margin-top:5px}
+.dict figure.fig{margin:0 0 20px}
+.dict .sheet{background:var(--d-plate);border:1px solid var(--d-plate-line);border-radius:3px;
+  box-shadow:0 1px 3px rgba(20,30,40,.07);padding:16px 18px;overflow-x:auto}
+.dict svg.plate{display:block;width:100%;height:auto;min-width:560px;font-family:var(--d-disp)}
+.dict figcaption{font-family:var(--d-mono);font-size:11px;color:var(--d-muted);margin-top:9px;line-height:1.5}
+.dict figcaption::before{content:"Fig. ";color:var(--d-accent-ink)}
+.dict dl.facts{margin:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:1px;background:var(--d-hair);border:1px solid var(--d-hair);border-radius:3px;overflow:hidden}
+.dict dl.facts>div{background:var(--d-surface);padding:13px 15px}
+.dict dl.facts>div.fail{background:var(--d-flag-soft)}
+.dict dt{font-family:var(--d-mono);font-size:9.5px;letter-spacing:.11em;text-transform:uppercase;
+  color:var(--d-muted);margin:0 0 4px}
+.dict div.fail dt{color:var(--d-flag)}
+.dict dd{margin:0;font-size:13.8px;line-height:1.55;color:var(--d-ink2)}
+.dict ol.listing{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:1px;
+  background:var(--d-hair);border:1px solid var(--d-hair);border-radius:4px;overflow:hidden}
+.dict ol.listing a{background:var(--d-surface);display:grid;
+  grid-template-columns:32px minmax(0,1fr) minmax(0,1.35fr);gap:14px;align-items:baseline;
+  padding:11px 15px;text-decoration:none}
+.dict ol.listing a.two{grid-template-columns:minmax(0,1fr) minmax(0,1.35fr)}
+.dict ol.listing a:hover{background:var(--d-accent-soft)}
+.dict ol.listing .st{font-family:var(--d-mono);font-size:10px;color:var(--d-muted)}
+.dict ol.listing .nm{font-family:var(--d-disp);font-weight:600;font-size:14px;color:var(--d-ink)}
+.dict ol.listing a:hover .nm{color:var(--d-accent-ink)}
+.dict ol.listing .an{font-size:12.8px;color:var(--d-muted);line-height:1.45}
+@media (max-width:900px){
+  .dict article.entry{padding:20px 18px}
+  .dict dl.facts{grid-template-columns:1fr}
+  .dict .qgrid{grid-template-columns:1fr}
+  .dict ol.listing a{grid-template-columns:26px 1fr;gap:6px 10px}
+  .dict ol.listing a.two{grid-template-columns:1fr}
+  .dict ol.listing .an{grid-column:2}
+  .dict ol.listing a.two .an{grid-column:1}
+  .dict h2.name{font-size:20px}
+}
+.dict ul.rel{list-style:none;display:flex;flex-wrap:wrap;gap:6px;margin:14px 0 0;padding:0;
+  align-items:baseline}
+.dict ul.rel li.lab{font-family:var(--d-mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--d-muted)}
+.dict ul.rel a{font-family:var(--d-disp);font-size:11.5px;font-weight:600;text-decoration:none;
+  color:var(--d-ink2);border:1px solid var(--d-line);border-radius:2px;padding:2px 8px;display:block}
+.dict ul.rel a:hover{color:var(--d-accent-ink);border-color:var(--d-accent);background:var(--d-accent-soft)}
+
+/* ---- Consistency with regular article text (.prose: 16.5px / 1.65). Mono labels, tags,
+   figure captions and small notes deliberately stay small. ---- */
+.dict p.defn, .dict dd, .dict .canon>p, .dict .canoncols a, .dict .freq p.flead, .dict .freq .gsub,
+.dict .freq li, .dict .freq li a, .dict .freq li b.off, .dict .freq li .d, .dict .qgrid .q, .dict .qgrid .d,
+.dict a.dcard p, .dict ol.listing .nm, .dict ol.listing .an, .dict a.dcard.dacard .who, .dict .pblurb {
+  font-size: 16.5px; line-height: 1.65;
+}
+.dict p.defn { max-width: none; }
+.dict h2.name { font-size: 1.65rem; line-height: 1.3; letter-spacing: -.02em; }
+.dict .canon>h2, .dict .freq h3 { font-size: 1.28rem; line-height: 1.3; }
+.dict dd { color: var(--text-2); }
+@media (max-width: 900px) { .dict h2.name { font-size: 1.4rem; } }

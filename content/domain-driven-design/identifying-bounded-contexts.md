@@ -146,3 +146,8 @@ While we previously discussed "splinters" and confusion, Vernon provides a more 
 
 - For example, if "Policy" means different things to Underwriting, Claims, and Inspections, you should not try to create one massive "Policy" object. Instead, you have three separate Bounded Contexts, each with its own "Policy".
 - Similarly, the word "Flight" means different things to a mechanic, a pilot, and a ticketing agent; each of these perspectives belongs in its own Bounded Context.
+
+## References
+
+- Vaughn Vernon, *Domain-Driven Design Distilled* (Addison-Wesley, 2016).
+- Vaughn Vernon, *Implementing Domain-Driven Design* (Addison-Wesley, 2013).
