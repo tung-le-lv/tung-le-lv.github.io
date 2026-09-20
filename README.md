@@ -17,6 +17,15 @@ Open http://localhost:4173. Stop the server with `Ctrl+C`.
 
 Just give markdown/pdf/word files.
 
+## Diagrams (Excalidraw)
+
+Article images are redrawn in Excalidraw, never copied from the source. Each diagram is a short script in `diagrams/src/`; `npm run diagrams` renders them with Excalidraw and writes:
+
+- `diagrams/<name>.excalidraw` — the editable source (open it at https://excalidraw.com)
+- `src/assets/img/<name>.png` — the image used in the article
+
+Export one diagram with `npm run diagrams -- <name>`. It needs Google Chrome (set `CHROME_PATH` if it is not in the default macOS location) and an internet connection.
+
 ## Deploy to GitHub Pages
 
 The site is deployed by GitHub Actions (`.github/workflows/deploy.yml`) on every push to `main`. It runs `npm ci` and `npm run build`, then publishes `dist/`.

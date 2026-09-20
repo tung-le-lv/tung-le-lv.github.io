@@ -42,7 +42,7 @@ The database and the broker are two separate systems, so no single transaction c
 - As part of the same transaction that creates, updates or deletes business objects, the service sends messages by **inserting them into the OUTBOX table**. Atomicity is guaranteed because this is a local ACID transaction.
 - The **Message Relay** reads the OUTBOX table and publishes the messages to a message broker.
 
-![A service reliably publishes a message by inserting it into an OUTBOX table as part of the transaction that updates the database. The Message Relay reads the OUTBOX table and publishes the messages to a message broker.](/assets/img/outbox-overview.png)
+![The order service writes the order and an OUTBOX row in one local transaction. A message relay then reads the OUTBOX table and publishes each message to the message broker.](/assets/img/outbox-overview.png)
 
 **With NoSQL databases**, each business entity gets an attribute holding a list of messages that still need to be published. When the service updates the entity, it appends a message to that list. This is atomic because it is a single database operation.
 
@@ -76,7 +76,7 @@ Committed inserts into the OUTBOX table are recorded in the database's **transac
 
 This is the same idea as **change data capture (CDC)**: a tool watches the source database's transaction logs and streams the changes to a target such as Kafka.
 
-![Change data capture: a source database's transaction logs are read by a CDC tool, which streams inserts, updates and deletes to a target database and to Kafka. Source: Thoughtworks.](/assets/img/outbox-log-tailing-2.png)
+![Change data capture: a source database's transaction log is read by a CDC tool, which streams the changes to a target database and to a Kafka topic.](/assets/img/outbox-cdc.png)
 
 **Tools for log tailing**
 

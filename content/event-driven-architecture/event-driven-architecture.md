@@ -63,7 +63,7 @@ There are two kinds of channels: point-to-point and [publish-subscribe](http://w
 
 ## Patterns Overview
 
-![A cheatsheet on event-driven architectural patterns: competing consumer, consume and project, event sourcing, async task execution, transactional outbox, event aggregation and saga.](/assets/img/eda-patterns-cheatsheet.jpeg)
+![A cheatsheet on event-driven architectural patterns: competing consumer, consume and project, event sourcing, async task execution, transactional outbox, event aggregation and saga.](/assets/img/eda-patterns-cheatsheet.png)
 
 ## References
 

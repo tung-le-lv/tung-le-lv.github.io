@@ -17,7 +17,7 @@ order: 1
 - Independent scalability, allowing each BFF service to scale according to its own workload rather than scaling the entire API layer.
 - Each API gateway is smaller and simpler, application startup times are reduced, resulting in faster deployments and improved operational efficiency.
 
-![The Backends for frontends pattern: a separate API gateway for each client. Each client team owns their API gateway, and an API gateway team owns the common layer.](/assets/img/bff-benefits.png)
+![Backends for frontends: the mobile, browser and public API clients each get their own API gateway, owned by that client's team, and all three sit on a common layer owned by the API gateway team.](/assets/img/bff-benefits.png)
 
 ## BFF with GraphQL
 
