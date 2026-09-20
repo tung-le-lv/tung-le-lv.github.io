@@ -91,10 +91,10 @@ async function renderDiagrams() {
   });
   for (const n of nodes) { n.removeAttribute('data-processed'); n.textContent = n.dataset.src; }
   try { await mermaid.run({ nodes }); } catch (e) { console.warn('mermaid', e); }
-  // keep wide diagrams legible: scroll horizontally rather than shrinking to fit
+  // keep very wide diagrams legible: scroll horizontally rather than shrinking to fit
   for (const n of nodes) {
     const svg = $('svg', n), w = svg?.viewBox?.baseVal?.width;
-    if (w) svg.style.minWidth = `${w}px`;
+    if (w > 1000) svg.style.minWidth = `${w}px`; // only truly wide diagrams scroll; the rest shrink to fit
   }
 }
 
