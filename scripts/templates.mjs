@@ -29,6 +29,7 @@ const ICONS = {
   arrowUp: '<path d="M12 19V5M6 11l6-6 6 6"/>',
   collapseAll: '<path d="m7 20 5-5 5 5M7 4l5 5 5-5"/>',
   expandAll: '<path d="m7 15 5 5 5-5M7 9l5-5 5 5"/>',
+  close: '<path d="M6 6l12 12M18 6 6 18"/>',
   list: '<path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>',
 };
 
@@ -126,7 +127,7 @@ ${o.body}
 <div id="search" class="search" hidden>
   <div class="search-backdrop"></div>
   <div class="search-panel" role="dialog" aria-modal="true" aria-label="Search" tabindex="-1">
-    <div class="search-input">${icon('search')}<input type="search" placeholder="Search articles, headings, tags…" autocomplete="off" spellcheck="false" aria-label="Search query"><kbd>esc</kbd></div>
+    <div class="search-input">${icon('search')}<input type="search" placeholder="Search articles, headings, tags…" autocomplete="off" spellcheck="false" aria-label="Search query"><kbd>esc</kbd><button type="button" class="search-close" aria-label="Close search">${icon('close')}</button></div>
     <ul class="search-results" role="listbox"></ul>
     <div class="search-foot"><span><kbd>↑</kbd><kbd>↓</kbd> navigate</span><span><kbd>↵</kbd> open</span></div>
   </div>

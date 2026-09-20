@@ -303,6 +303,8 @@ body.lb-open { overflow: hidden; }
   .search-results { max-height: calc(var(--vvh, 100dvh) - 20px - 62px); overflow-y: scroll; }   /* explicit height: WebKit won't shrink a scroller inside a flex box reliably */
   .search-input input { font-size: 16px; }   /* 16px stops iOS Safari zooming the page on focus */
   .search-foot { display: none; }             /* keyboard hints mean nothing on a phone, and the space is needed */
+  .search-input kbd { display: none; }        /* "esc" means nothing on a phone... */
+  .search-input .search-close { display: grid; }   /* ...so a close button takes its place */
 }
 @media (max-width: 700px) { .lb-hint { display: none; } .lb-stage { padding: 56px 12px 12px; } }
 
@@ -310,6 +312,9 @@ body.lb-open { overflow: hidden; }
 .search[hidden] { display: none; }
 .search { position: fixed; inset: 0; z-index: 100; display: grid; justify-items: center; align-items: start; padding: 12vh 16px 0; }
 .search-backdrop { position: absolute; inset: 0; background: rgb(8 10 16 / .5); backdrop-filter: blur(4px); animation: fade .18s both; }
+.search-close { display: none; place-items: center; width: 34px; height: 34px; padding: 0; border: 0; border-radius: 50%; background: var(--surface-2); color: var(--text-2); flex: none; }
+.search-close:active { background: var(--border); }
+.search-close .icon { width: 18px; height: 18px; }
 .search-panel:focus { outline: none; }
 .search-panel { position: relative; width: min(640px, 100%); max-height: min(70vh, 640px); display: flex; flex-direction: column; overflow: hidden; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; box-shadow: var(--shadow-lg); animation: pop .22s var(--ease) both; }
 @keyframes fade { from { opacity: 0; } }
@@ -360,7 +365,8 @@ body.search-open { overflow: hidden; }   /* the page behind the popup must not s
   .scrim { display: block; position: fixed; inset: var(--topbar) 0 0 0; z-index: 54; background: rgb(8 10 16 / .45); opacity: 0; pointer-events: none; transition: opacity .25s; }
   body.nav-open .scrim { opacity: 1; pointer-events: auto; }
   .search-btn:not(.hero-search) { min-width: 0; } .search-btn:not(.hero-search) span, .search-btn:not(.hero-search) kbd { display: none; }
-  .search-btn:not(.hero-search) { padding: 9px; }
+  .search-btn:not(.hero-search) { padding: 9px; border: 0; background: transparent; box-shadow: none; color: var(--text-2); }   /* phones: just the icon */
+  .search-btn:not(.hero-search):hover { box-shadow: none; background: var(--surface-2); }
   .prose .anchor { display: none; }
 }
 @media (max-width: 560px) {

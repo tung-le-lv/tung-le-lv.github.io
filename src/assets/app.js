@@ -366,6 +366,7 @@ const openSearch = () => {
 const closeSearch = () => { dlg.hidden = true; document.body.classList.remove('search-open'); };
 document.addEventListener('click', (e) => { if (e.target.closest('.search-btn')) openSearch(); });
 $('.search-backdrop', dlg).addEventListener('click', closeSearch);
+$('.search-close', dlg).addEventListener('click', closeSearch);
 input.addEventListener('input', runSearch);
 // iOS: while the keyboard is open a drag pans the whole page instead of scrolling the results. Touching the results
 // closes the keyboard (the usual mobile-search behaviour), after which the list scrolls normally.
