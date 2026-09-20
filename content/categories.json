@@ -33,5 +33,12 @@
     "icon": "sparkles",
     "color": "#6366f1",
     "description": "Engineering practices for building software with AI agents: harnesses, guardrails and workflows."
+  },
+  {
+    "slug": "case-studies",
+    "title": "Case Studies",
+    "icon": "globe",
+    "color": "#14b8a6",
+    "description": "Real-world architectures examined layer by layer: how large systems are put together and why."
   }
 ]
