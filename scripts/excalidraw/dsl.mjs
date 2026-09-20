@@ -25,7 +25,7 @@ export function scene({ fs = 20 } = {}) {
         backgroundColor: col(o.fill ?? 'white'), fillStyle: 'solid', roughness: o.rough ?? 1,
         strokeColor: o.stroke ?? ink, strokeStyle: o.dashed ? 'dashed' : 'solid', strokeWidth: o.sw ?? 2,
         roundness: o.round === false ? null : { type: 3 },
-        ...(label ? { label: { text: label, fontSize: o.fs ?? fs, textAlign: 'center', verticalAlign: 'middle' } } : {}),
+        ...(label ? { label: { text: label, fontSize: o.fs ?? fs, textAlign: 'center', verticalAlign: 'middle', strokeColor: o.tc ?? ink } } : {}),
       });
       return id;
     },

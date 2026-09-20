@@ -134,7 +134,7 @@ namespace Publishing.Shipping
 
 ## Using Event Storming
 
-You can actively discover Bounded Context boundaries by conducting an **Event Storming** session. As you map out business events on a timeline using sticky notes, boundaries will naturally emerge on the modeling surface. You will likely notice a natural boundary when the flow of events crosses departmental divisions, when business people start arguing over the definition of a term, or when a concept clearly steps outside the Core Domain you are focusing on.
+You can actively discover Bounded Context boundaries by conducting an **Event Storming** session (see [Event Storming](/domain-driven-design/event-storming/)). As you map out business events on a timeline using sticky notes, boundaries will naturally emerge on the modeling surface. You will likely notice a natural boundary when the flow of events crosses departmental divisions, when business people start arguing over the definition of a term, or when a concept clearly steps outside the Core Domain you are focusing on.
 
 ## Departmental and Work Group Divisions
 
