@@ -36,7 +36,7 @@ flowchart TD
 
 ![Netflix cloud architecture: every layer a typical client request touches, with the numbered request flow 1 to 10.](/assets/img/netflix-architecture-infra.png)
 
-*The full infrastructure diagram. Click the image to enlarge.*
+*The full infrastructure diagram.*
 
 ## What happens when you press play
 

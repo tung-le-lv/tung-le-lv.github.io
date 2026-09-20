@@ -65,8 +65,6 @@ There are two kinds of channels: point-to-point and [publish-subscribe](http://w
 
 ![A cheatsheet on event-driven architectural patterns: competing consumer, consume and project, event sourcing, async task execution, transactional outbox, event aggregation and saga.](/assets/img/eda-patterns-cheatsheet.jpeg)
 
-*Click the image to enlarge.*
-
 ## References
 
 - [Event-driven architecture style — Azure Architecture Center, Microsoft Learn](https://learn.microsoft.com/en-us/azure/architecture/guide/architecture-styles/event-driven)
