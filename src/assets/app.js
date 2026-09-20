@@ -107,10 +107,17 @@ async function renderDiagrams() {
 
 /* ---------------- Reading progress ---------------- */
 const bar = $('#progress');
+const toTop = $('.to-top');
 function onScroll() {
   const h = document.documentElement.scrollHeight - innerHeight;
-  bar.style.transform = `scaleX(${$('#content').dataset.kind === 'article' && h > 0 ? Math.min(1, scrollY / h) : 0})`;
+  const article = $('#content').dataset.kind === 'article';
+  bar.style.transform = `scaleX(${article && h > 0 ? Math.min(1, scrollY / h) : 0})`;
+  toTop.classList.toggle('visible', article && scrollY > 500); // back-to-top only on long reads
 }
+toTop.addEventListener('click', () => {
+  scrollTo({ top: 0, behavior: reduceMotion.matches ? 'auto' : 'smooth' });
+  toTop.blur();
+});
 addEventListener('scroll', onScroll, { passive: true });
 
 /* ---------------- Page transitions ---------------- */
