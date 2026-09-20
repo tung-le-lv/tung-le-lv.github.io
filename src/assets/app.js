@@ -346,7 +346,23 @@ function select(n) {
 const fitSearch = () => { const vv = window.visualViewport; dlg.style.setProperty('--vvh', `${vv ? vv.height : innerHeight}px`); if (vv) dlg.style.transform = `translateY(${vv.offsetTop}px)`; };
 window.visualViewport?.addEventListener('resize', fitSearch);
 window.visualViewport?.addEventListener('scroll', fitSearch);
-const openSearch = () => { dlg.hidden = false; document.body.classList.add('search-open'); fitSearch(); input.value = ''; runSearch(); input.focus({ preventScroll: true }); };
+// iOS only honours focus() when it happens synchronously inside the tap, so focus first and search afterwards;
+// retry once the popup has painted, and fall back to focusing the panel so it still owns the touches.
+const focusSearch = () => {
+  if (dlg.hidden) return;
+  input.focus({ preventScroll: true });
+  if (document.activeElement !== input) $('.search-panel', dlg).focus({ preventScroll: true });
+};
+const openSearch = () => {
+  dlg.hidden = false;
+  document.body.classList.add('search-open');
+  fitSearch();
+  input.value = '';
+  focusSearch();
+  runSearch();
+  requestAnimationFrame(focusSearch);
+  setTimeout(focusSearch, 120);
+};
 const closeSearch = () => { dlg.hidden = true; document.body.classList.remove('search-open'); };
 document.addEventListener('click', (e) => { if (e.target.closest('.search-btn')) openSearch(); });
 $('.search-backdrop', dlg).addEventListener('click', closeSearch);

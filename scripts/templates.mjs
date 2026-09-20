@@ -125,7 +125,7 @@ ${o.body}
 <button type="button" class="to-top" aria-label="Back to top" title="Back to top">${icon('arrowUp')}</button>
 <div id="search" class="search" hidden>
   <div class="search-backdrop"></div>
-  <div class="search-panel" role="dialog" aria-modal="true" aria-label="Search">
+  <div class="search-panel" role="dialog" aria-modal="true" aria-label="Search" tabindex="-1">
     <div class="search-input">${icon('search')}<input type="search" placeholder="Search articles, headings, tags…" autocomplete="off" spellcheck="false" aria-label="Search query"><kbd>esc</kbd></div>
     <ul class="search-results" role="listbox"></ul>
     <div class="search-foot"><span><kbd>↑</kbd><kbd>↓</kbd> navigate</span><span><kbd>↵</kbd> open</span></div>

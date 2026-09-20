@@ -310,6 +310,7 @@ body.lb-open { overflow: hidden; }
 .search[hidden] { display: none; }
 .search { position: fixed; inset: 0; z-index: 100; display: grid; justify-items: center; align-items: start; padding: 12vh 16px 0; }
 .search-backdrop { position: absolute; inset: 0; background: rgb(8 10 16 / .5); backdrop-filter: blur(4px); animation: fade .18s both; }
+.search-panel:focus { outline: none; }
 .search-panel { position: relative; width: min(640px, 100%); max-height: min(70vh, 640px); display: flex; flex-direction: column; overflow: hidden; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; box-shadow: var(--shadow-lg); animation: pop .22s var(--ease) both; }
 @keyframes fade { from { opacity: 0; } }
 @keyframes pop { from { opacity: 0; transform: translateY(-10px) scale(.98); } }
