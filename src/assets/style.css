@@ -336,8 +336,16 @@ body.lb-open { overflow: hidden; }
 @media (max-width: 900px) {
   .menu-btn { display: grid; }
   .shell { grid-template-columns: minmax(0, 1fr); }
-  .sidebar { position: fixed; z-index: 55; top: var(--topbar); left: 0; bottom: 0; width: min(320px, 86vw); height: auto; background: var(--bg); transform: translateX(-102%); transition: transform .3s var(--ease); box-shadow: var(--shadow-lg); }
-  body.nav-open .sidebar { transform: none; }
+  .sidebar {
+    position: fixed; z-index: 55; top: var(--topbar); left: 0; width: min(320px, 86vw); background: var(--bg);
+    height: calc(100vh - var(--topbar)); height: calc(100dvh - var(--topbar));   /* fixed height so the list scrolls inside the drawer (iOS-safe) */
+    overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; touch-action: pan-y;
+    padding-bottom: max(40px, env(safe-area-inset-bottom));
+    transform: translateX(-102%); visibility: hidden;
+    transition: transform .3s var(--ease), visibility 0s .3s; box-shadow: var(--shadow-lg);
+  }
+  body.nav-open .sidebar { transform: none; visibility: visible; transition-delay: 0s; }
+  body.nav-open { overflow: hidden; }   /* the page behind the open drawer must not scroll */
   .scrim { display: block; position: fixed; inset: var(--topbar) 0 0 0; z-index: 54; background: rgb(8 10 16 / .45); opacity: 0; pointer-events: none; transition: opacity .25s; }
   body.nav-open .scrim { opacity: 1; pointer-events: auto; }
   .search-btn:not(.hero-search) { min-width: 0; } .search-btn:not(.hero-search) span, .search-btn:not(.hero-search) kbd { display: none; }
