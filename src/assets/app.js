@@ -20,6 +20,27 @@ addEventListener('resize', setAppHeight);
 addEventListener('orientationchange', () => setTimeout(setAppHeight, 200));
 window.visualViewport?.addEventListener('resize', setAppHeight);
 
+/* ---------------- Page scroll lock (drawer, search, lightbox) ----------------
+   iOS ignores `overflow: hidden` on the page, so on touch devices the page is frozen with position: fixed
+   and its scroll position is restored afterwards. */
+let lockedAt = null;
+function syncLock() {
+  const cl = document.body.classList;
+  const want = cl.contains('nav-open') || cl.contains('search-open') || cl.contains('lb-open');
+  if (want && lockedAt === null) {
+    lockedAt = scrollY;
+    document.body.style.top = `-${lockedAt}px`;
+    cl.add('scroll-locked');
+  } else if (!want && lockedAt !== null) {
+    const y = lockedAt;
+    lockedAt = null;
+    cl.remove('scroll-locked');
+    document.body.style.top = '';
+    scrollTo({ top: y, behavior: 'instant' });
+  }
+}
+new MutationObserver(syncLock).observe(document.body, { attributes: true, attributeFilter: ['class'] });
+
 /* ---------------- Mobile nav ---------------- */
 const closeNav = () => document.body.classList.remove('nav-open');
 $('.menu-btn').addEventListener('click', () => document.body.classList.toggle('nav-open'));
@@ -170,6 +191,7 @@ async function navigate(url, { push = true } = {}) {
     c.replaceWith(document.adoptNode(next));
     closeNav();
     closeLightbox();
+    syncLock();   // unlock now, so the scroll-to-top below is not undone by a later restore
     syncSidebar();
     initPage();
     const target = url.hash && document.getElementById(decodeURIComponent(url.hash.slice(1)));
@@ -329,6 +351,8 @@ const closeSearch = () => { dlg.hidden = true; document.body.classList.remove('s
 document.addEventListener('click', (e) => { if (e.target.closest('.search-btn')) openSearch(); });
 $('.search-backdrop', dlg).addEventListener('click', closeSearch);
 input.addEventListener('input', runSearch);
+// on touch devices, a drag anywhere on the popup except the results list must not move anything
+dlg.addEventListener('touchmove', (e) => { if (!e.target.closest('.search-results')) e.preventDefault(); }, { passive: false });
 list.addEventListener('click', (e) => { if (e.target.closest('a')) closeSearch(); });
 list.addEventListener('mousemove', (e) => { const li = e.target.closest('li[role=option]'); if (li) select($$('li[role=option]', list).indexOf(li)); });
 addEventListener('keydown', (e) => {
