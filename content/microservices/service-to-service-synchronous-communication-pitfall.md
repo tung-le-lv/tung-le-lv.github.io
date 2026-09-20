@@ -309,4 +309,4 @@ Ask these when you see a service-to-service call:
 - Eric Evans, *Domain-Driven Design: Tackling Complexity in the Heart of Software* (Addison-Wesley, 2003).
 - Martin Fowler, *Patterns of Enterprise Application Architecture* (Addison-Wesley, 2002) — Separated Interface.
 - Neal Ford, Mark Richards, Pramod Sadalage and Zhamak Dehghani, *Software Architecture: The Hard Parts* (O'Reilly Media, 2021).
-- Tung Le, [OpenMind.DDD.Patterns](https://github.com/tung-le-lv/OpenMind.DDD.Patterns) — DDD code examples.
+- Tung Le, [OpenMind.DDD.Patterns](https://github.com/tung-le-lv/OpenMind.DDD.Patterns) mentioned in [Curated List of Domain-Driven Design](https://github.com/heynickc/awesome-ddd).
