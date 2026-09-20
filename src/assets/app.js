@@ -313,8 +313,12 @@ function select(n) {
   items.forEach((li, i) => li.setAttribute('aria-selected', i === sel));
   items[sel].scrollIntoView({ block: 'nearest' });
 }
-const openSearch = () => { dlg.hidden = false; input.value = ''; runSearch(); input.focus(); };
-const closeSearch = () => { dlg.hidden = true; };
+// keep the popup inside the visible area: on iOS the on-screen keyboard shrinks visualViewport, not the layout viewport
+const fitSearch = () => { const vv = window.visualViewport; dlg.style.setProperty('--vvh', `${vv ? vv.height : innerHeight}px`); if (vv) dlg.style.transform = `translateY(${vv.offsetTop}px)`; };
+window.visualViewport?.addEventListener('resize', fitSearch);
+window.visualViewport?.addEventListener('scroll', fitSearch);
+const openSearch = () => { dlg.hidden = false; document.body.classList.add('search-open'); fitSearch(); input.value = ''; runSearch(); input.focus({ preventScroll: true }); };
+const closeSearch = () => { dlg.hidden = true; document.body.classList.remove('search-open'); };
 document.addEventListener('click', (e) => { if (e.target.closest('.search-btn')) openSearch(); });
 $('.search-backdrop', dlg).addEventListener('click', closeSearch);
 input.addEventListener('input', runSearch);
