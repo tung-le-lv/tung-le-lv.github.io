@@ -67,14 +67,13 @@ function sidebar(ctx, cur) {
   }).join('');
   return `
   <aside id="sidebar" class="sidebar" aria-label="Documentation navigation">
-    <div class="nav-tools">
-      <span class="nav-tools-title">Contents</span>
+    <div class="nav-pin">
+      <a class="nav-link nav-home" href="/" data-path="/">${icon('layers')}<span>Home</span></a>
       <button type="button" class="nav-toggle" data-state="collapse" aria-label="Collapse all sections" title="Collapse all">
         <span class="i-collapse">${icon('collapseAll')}</span><span class="i-expand">${icon('expandAll')}</span>
       </button>
     </div>
     <nav>
-      <a class="nav-link nav-home" href="/" data-path="/">${icon('layers')}<span>Home</span></a>
       ${groups}
       <a class="nav-link nav-home" href="/tags/" data-path="/tags/">${icon('tag')}<span>All tags</span></a>
     </nav>

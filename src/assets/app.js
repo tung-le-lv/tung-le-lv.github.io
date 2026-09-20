@@ -13,6 +13,13 @@ $('.theme-btn').addEventListener('click', () => {
   document.startViewTransition && !reduceMotion.matches ? document.startViewTransition(apply) : apply();
 });
 
+/* ---------------- Real viewport height (iOS toolbars make 100vh unreliable) ---------------- */
+const setAppHeight = () => root.style.setProperty('--app-h', `${window.visualViewport?.height ?? innerHeight}px`);
+setAppHeight();
+addEventListener('resize', setAppHeight);
+addEventListener('orientationchange', () => setTimeout(setAppHeight, 200));
+window.visualViewport?.addEventListener('resize', setAppHeight);
+
 /* ---------------- Mobile nav ---------------- */
 const closeNav = () => document.body.classList.remove('nav-open');
 $('.menu-btn').addEventListener('click', () => document.body.classList.toggle('nav-open'));
