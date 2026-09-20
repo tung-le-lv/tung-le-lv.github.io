@@ -2,7 +2,7 @@
 title: Netflix Architecture
 description: A layer-by-layer tour of a Netflix-style cloud architecture — what happens when you press play, how services talk over gRPC, and how synchronous calls, events and replicated data are each used where they fit.
 tags: [netflix, grpc, cdn, event-driven, resilience, distributed-systems]
-updated: 2026-09-20
+updated: 2024-08-11
 order: 1
 ---
 

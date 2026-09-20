@@ -2,7 +2,7 @@
 title: Harness Engineering
 description: Why the future of AI-assisted development is less about better prompts and more about the guides, sensors and feedback loops built around the agent.
 tags: [ai-agents, harness, feedback-loops, architecture-fitness]
-updated: 2026-08-14
+updated: 2026-09-20
 order: 1
 ---
 

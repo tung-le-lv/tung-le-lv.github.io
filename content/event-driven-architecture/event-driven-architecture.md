@@ -2,7 +2,7 @@
 title: Event Driven Architecture
 description: What event-driven architecture is, the three event patterns behind it, messaging models and channel types, its benefits and challenges, and a cheatsheet of the core patterns.
 tags: [eda, event-sourcing, messaging, pub-sub, kafka]
-updated: 2026-09-19
+updated: 2025-10-01
 order: 1
 ---
 

@@ -2,7 +2,7 @@
 title: Identifying Bounded Contexts
 description: Practical strategies from Vaughn Vernon for finding Bounded Context boundaries — subdomains, life cycle stages, Event Storming, organisational lines and overloaded terms.
 tags: [ddd, bounded-context, strategic-design, event-storming]
-updated: 2026-09-19
+updated: 2023-01-24
 section: Strategic Design
 order: 1
 ---

@@ -2,7 +2,7 @@
 title: Event Storming
 description: "A workshop technique for exploring a business process with sticky notes: the six note types, the five steps in order, and why the data model comes third, not first."
 tags: [event-storming, ddd, modeling, workshop, domain-events]
-updated: 2026-09-20
+updated: 2025-07-09
 order: 2
 ---
 

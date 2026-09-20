@@ -2,7 +2,7 @@
 title: Diagram Driven Design
 description: Why architects should draw diagrams as sketches for human comprehension — and why being unable to draw a good diagram of a system is a warning sign about the system itself.
 tags: [diagrams, architecture-communication]
-updated: 2026-09-19
+updated: 2026-02-13
 section: Diagram Design Elevator / Diagram Driven Design
 order: 1
 ---

@@ -2,7 +2,7 @@
 title: Message Idempotency
 description: Why a broker with at-least-once delivery will sometimes deliver the same message twice, and how to make consumers safe with idempotent handlers or by tracking processed message ids (the Inbox pattern).
 tags: [idempotency, inbox, at-least-once, message-processing, reliability, messaging]
-updated: 2026-09-20
+updated: 2024-10-05
 order: 3
 ---
 

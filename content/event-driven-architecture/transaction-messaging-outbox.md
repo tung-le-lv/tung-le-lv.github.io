@@ -2,7 +2,7 @@
 title: Transaction Messaging (Outbox)
 description: How the transactional outbox pattern guarantees that a database change and the message announcing it never get out of sync, and the two ways to publish from the outbox — polling and transaction log tailing.
 tags: [outbox, transactional-messaging, cdc, reliability, messaging]
-updated: 2026-09-20
+updated: 2024-03-06
 order: 2
 ---
 

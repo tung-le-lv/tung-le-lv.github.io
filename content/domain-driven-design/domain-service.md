@@ -2,7 +2,7 @@
 title: Domain Service
 description: "What a Domain Service is and is not, the three cases where you need one (a business process, a transformation, a calculation across objects), how it differs from an Application Service, and Java examples for each."
 tags: [ddd, domain-service, tactical-design, application-service, anemic-domain-model, java]
-updated: 2026-09-20
+updated: 2023-07-20
 section: Tactical Design
 order: 1
 ---
