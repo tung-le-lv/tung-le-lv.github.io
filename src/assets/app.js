@@ -367,6 +367,12 @@ const closeSearch = () => { dlg.hidden = true; document.body.classList.remove('s
 document.addEventListener('click', (e) => { if (e.target.closest('.search-btn')) openSearch(); });
 $('.search-backdrop', dlg).addEventListener('click', closeSearch);
 input.addEventListener('input', runSearch);
+// iOS: while the keyboard is open a drag pans the whole page instead of scrolling the results. Touching the results
+// closes the keyboard (the usual mobile-search behaviour), after which the list scrolls normally.
+const dismissKeyboard = () => { if (document.activeElement === input) input.blur(); };
+list.addEventListener('touchstart', dismissKeyboard, { passive: true });
+list.addEventListener('scroll', dismissKeyboard, { passive: true });
+$('.search-backdrop', dlg).addEventListener('touchstart', dismissKeyboard, { passive: true });
 // on touch devices, a drag anywhere on the popup except the results list must not move anything
 dlg.addEventListener('touchmove', (e) => { if (!e.target.closest('.search-results')) e.preventDefault(); }, { passive: false });
 list.addEventListener('click', (e) => { if (e.target.closest('a')) closeSearch(); });
