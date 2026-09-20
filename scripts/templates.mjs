@@ -27,6 +27,8 @@ const ICONS = {
   compass: '<circle cx="12" cy="12" r="9"/><path d="m15.5 8.5-2 5-5 2 2-5 5-2Z"/>',
   globe: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/>',
   arrowUp: '<path d="M12 19V5M6 11l6-6 6 6"/>',
+  collapseAll: '<path d="m7 20 5-5 5 5M7 4l5 5 5-5"/>',
+  expandAll: '<path d="m7 15 5 5 5-5M7 9l5-5 5 5"/>',
   list: '<path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>',
 };
 
@@ -65,6 +67,12 @@ function sidebar(ctx, cur) {
   }).join('');
   return `
   <aside id="sidebar" class="sidebar" aria-label="Documentation navigation">
+    <div class="nav-tools">
+      <span class="nav-tools-title">Contents</span>
+      <button type="button" class="nav-toggle" data-state="collapse" aria-label="Collapse all sections" title="Collapse all">
+        <span class="i-collapse">${icon('collapseAll')}</span><span class="i-expand">${icon('expandAll')}</span>
+      </button>
+    </div>
     <nav>
       <a class="nav-link nav-home" href="/" data-path="/">${icon('layers')}<span>Home</span></a>
       ${groups}

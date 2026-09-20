@@ -19,6 +19,21 @@ $('.menu-btn').addEventListener('click', () => document.body.classList.toggle('n
 $('.scrim').addEventListener('click', closeNav);
 
 /* ---------------- Sidebar state ---------------- */
+const navToggle = $('.nav-toggle');
+const navGroups = () => $$('#sidebar details');
+function updateNavToggle() {
+  const anyOpen = navGroups().some((d) => d.open);
+  navToggle.dataset.state = anyOpen ? 'collapse' : 'expand';
+  navToggle.title = anyOpen ? 'Collapse all' : 'Expand all';
+  navToggle.setAttribute('aria-label', anyOpen ? 'Collapse all sections' : 'Expand all sections');
+}
+navToggle.addEventListener('click', () => {
+  const open = navToggle.dataset.state === 'expand';      // expand when everything is closed, otherwise collapse
+  navGroups().forEach((d) => (d.open = open));
+  updateNavToggle();
+});
+$('#sidebar').addEventListener('toggle', updateNavToggle, true);   // keep the label right when a group is toggled by hand
+
 function syncSidebar() {
   const path = location.pathname;
   let active;
@@ -31,6 +46,7 @@ function syncSidebar() {
   const det = $(`#sidebar .nav-cat[data-cat="${CSS.escape(cat)}"]`);
   if (det) det.open = true;
   for (let d = active?.closest('details'); d; d = d.parentElement?.closest('details')) d.open = true;
+  updateNavToggle();
   if (active) {
     const box = $('#sidebar'), r = active.getBoundingClientRect(), b = box.getBoundingClientRect();
     if (r.top < b.top || r.bottom > b.bottom) active.scrollIntoView({ block: 'center', behavior: reduceMotion.matches ? 'auto' : 'smooth' });

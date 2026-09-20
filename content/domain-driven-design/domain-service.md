@@ -75,21 +75,6 @@ flowchart TD
     APP --> AGG
 ```
 
-> [!NOTE] About the code
-> The Java below is converted from the C# examples in the [OpenMind.DDD.Patterns](https://github.com/tung-le-lv/OpenMind.DDD.Patterns) repository (`OrderConsolidationService` and `PaymentProcessingService`), with one extra example for the transformation case and Vernon's authentication example. Small supporting types (`Money`, `Order`, the repositories) are only sketched. The services and their clients were compiled and run against tests of their rules. The blocks marked ANTI-PATTERN and the unit-test snippet are illustrations.
-
-All the services share a marker interface, exactly like the repo's `IDomainService`:
-
-```java
-// shared/DomainService.java
-public interface DomainService { }
-
-// shared/DomainException.java
-public class DomainException extends RuntimeException {
-    public DomainException(String message) { super(message); }
-}
-```
-
 ## Case 1: a significant business process
 
 **Consolidate two draft orders into one.** Neither `Order` can own this logic, because neither aggregate has authority over the other. The rules span both: same customer, same currency, both still drafts, and a combined item limit. This mirrors Evans's funds-transfer example: two objects, one global rule set.
@@ -406,4 +391,4 @@ Used sparingly, a Domain Service keeps your **clients thin and the model rich**.
 
 - Eric Evans, *Domain-Driven Design: Tackling Complexity in the Heart of Software* (Addison-Wesley, 2003) — Chapter 5, Services.
 - Vaughn Vernon, *Implementing Domain-Driven Design* (Addison-Wesley, 2013) — Chapter 7, Services.
-- [OpenMind.DDD.Patterns](https://github.com/tung-le-lv/OpenMind.DDD.Patterns) — C# examples that the Java above is converted from.
+- [OpenMind.DDD.Patterns](https://github.com/tung-le-lv/OpenMind.DDD.Patterns).
