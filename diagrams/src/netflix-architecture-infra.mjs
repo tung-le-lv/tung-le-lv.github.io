@@ -38,7 +38,7 @@ export default () => {
 
   s.arrow('zuul', 'dgs', { fromSide: 'b', toSide: 't', via: [[1215, 290], [530, 290]], label: '4 route', labelAt: [900, 290], labelFs: 15 });
   s.arrow('dgs', 'dom', { fromSide: 'b', toSide: 't', t1: 0.175, label: '5 gRPC fan-out, deadline ~800 ms', labelAt: [530, 520], labelFs: 15 });
-  s.arrow('dom', 'dat', { fromSide: 'r', toSide: 'l', t0: 0.5, t1: 0.693, label: '6 cache-first reads', labelAt: [1285, 655], labelFs: 14 });
+  s.arrow('dom', 'dat', { fromSide: 'r', toSide: 'l', t0: 0.5, t1: 0.693, label: '6', labelFs: 15 });
   s.arrow('dom', 'evf', { fromSide: 'b', toSide: 't', t0: 0.5, t1: 0.255, label: '9 async events', labelAt: [810, 840], labelFs: 14 });
 
   // ---------- CDN + observability
@@ -46,7 +46,7 @@ export default () => {
   s.frame('obs', 1500, 1230, 590, 480, 'Observability (continuous, async)', { fill: 'pBlue', stroke: '#1c7ed6', fs: 17 });
   ['Atlas: dimensional time-series metrics', 'Edgar: distributed tracing across gRPC hops', 'Mantis: real-time operational streams', 'Logging: Keystone pipeline to\nElasticsearch (search) + S3 (archive)', 'Alerting and dashboards:\nanomaly detection on Atlas streams']
     .forEach((n, i) => s.box(`ob${i}`, 1525, 1290 + i * 84, 540, 70, n, { fill: 'white', fs: 15 }));
-  s.arrow('dom', 'oc', { fromSide: 'l', toSide: 't', t1: 0.024, via: [[352, 695]], label: '8 DRM license + OCA URLs', labelAt: [268, 960], labelFs: 15 });
+  s.arrow('dom', 'oc', { fromSide: 'l', toSide: 't', t1: 0.024, via: [[352, 695]], label: '8', labelFs: 15 });
   s.arrow('oc', 'cl', { fromSide: 'l', toSide: 'l', via: [[-70, 1295], [-70, 115]], color: '#e03131', sw: 4, label: 'video bytes\n(adaptive bitrate over HTTPS)', labelAt: [-70, 700], labelFs: 16 });
   s.arrow('reg', 'obs', { fromSide: 'b', toSide: 't', t0: 0.823, t1: 0.5, dashed: true, label: '10 metrics, traces, logs', labelAt: [1795, 1195], labelFs: 15 });
 

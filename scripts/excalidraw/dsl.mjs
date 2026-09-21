@@ -85,7 +85,7 @@ export function scene({ fs = 20 } = {}) {
       return [b.x + b.w * t, b.y + b.h + gap];
     },
     // Connector. o: fromSide/toSide ('l','r','t','b'), t0/t1 (0..1 along the edge), via [[x,y],...], dashed, color, sw, both, head:false,
-    // label (+ labelAt [x,y] or labelDx/labelDy offsets from the midpoint of the longest segment).
+    // label: text placed on the arrow (native Excalidraw arrow label; labelFs sets the size). labelAt/labelDx/labelDy are ignored.
     arrow(from, to, o = {}) {
       const a = boxes.get(from), z = boxes.get(to);
       const dx = z.x + z.w / 2 - (a.x + a.w / 2), dy = z.y + z.h / 2 - (a.y + a.h / 2);
@@ -96,20 +96,14 @@ export function scene({ fs = 20 } = {}) {
       const abs = [p0, ...(o.via ?? []), p1];
       const pts = abs.map(([x, y]) => [x - p0[0], y - p0[1]]);
       const xs = pts.map((p) => p[0]), ys = pts.map((p) => p[1]);
+      // The label is a native Excalidraw arrow label (what double-clicking an arrow creates): it sits on the arrow's
+      // midpoint and the renderer cuts a gap in the line around it, so no background box is needed.
       arrows.push({
         type: 'arrow', x: p0[0], y: p0[1], width: Math.max(...xs) - Math.min(...xs), height: Math.max(...ys) - Math.min(...ys), points: pts,
         start: { id: from }, end: { id: to }, strokeColor: o.color ?? ink, strokeWidth: o.sw ?? 2, strokeStyle: o.dashed ? 'dashed' : 'solid', roughness: 1,
         endArrowhead: o.head === false ? null : 'arrow', startArrowhead: o.both ? 'arrow' : null,
+        ...(o.label ? { label: { text: o.label, fontSize: o.labelFs ?? fs - 2, strokeColor: o.labelColor ?? o.color ?? ink } } : {}),
       });
-      if (o.label) {
-        let best = 0, at = [(p0[0] + p1[0]) / 2, (p0[1] + p1[1]) / 2];
-        for (let i = 0; i < abs.length - 1; i++) {
-          const len = Math.hypot(abs[i + 1][0] - abs[i][0], abs[i + 1][1] - abs[i][1]);
-          if (len > best) { best = len; at = [(abs[i][0] + abs[i + 1][0]) / 2, (abs[i][1] + abs[i + 1][1]) / 2]; }
-        }
-        const [lx, ly] = o.labelAt ?? [at[0] + (o.labelDx ?? 0), at[1] + (o.labelDy ?? 0)];
-        api.tag(lx, ly, o.label, { fs: o.labelFs, fill: o.labelFill });
-      }
     },
     // Free connector between absolute points (no binding).
     line(points, o = {}) {
@@ -118,12 +112,8 @@ export function scene({ fs = 20 } = {}) {
       const xs = pts.map((p) => p[0]), ys = pts.map((p) => p[1]);
       arrows.push({ type: 'arrow', x: x0, y: y0, width: Math.max(...xs) - Math.min(...xs), height: Math.max(...ys) - Math.min(...ys), points: pts,
         strokeColor: o.color ?? ink, strokeWidth: o.sw ?? 2, strokeStyle: o.dashed ? 'dashed' : 'solid', roughness: 1,
-        endArrowhead: o.head === false ? null : 'arrow', startArrowhead: o.both ? 'arrow' : null });
-      if (o.label) {
-        const mid = points[Math.floor(points.length / 2)];
-        const a = points[Math.floor((points.length - 1) / 2)];
-        api.tag(o.labelAt?.[0] ?? (mid[0] + a[0]) / 2 + (o.labelDx ?? 0), o.labelAt?.[1] ?? (mid[1] + a[1]) / 2 + (o.labelDy ?? 0), o.label, { fs: o.labelFs });
-      }
+        endArrowhead: o.head === false ? null : 'arrow', startArrowhead: o.both ? 'arrow' : null,
+        ...(o.label ? { label: { text: o.label, fontSize: o.labelFs ?? fs - 2, strokeColor: o.color ?? ink } } : {}) });
     },
     elements() { return [...back, ...mid, ...arrows, ...front]; },
   };

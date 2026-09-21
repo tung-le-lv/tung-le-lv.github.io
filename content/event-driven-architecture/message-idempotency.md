@@ -71,7 +71,7 @@ flowchart TD
 **Without a separate table.** The message handler can instead record the message ids in the domain table itself, for example a `ProcessedMessageIds` column on the `Order` table. This is especially useful with a **NoSQL database that has a limited transaction model**, where you cannot update two tables in one transaction.
 
 > [!INFO] A bonus in CQRS
-> Associating the list of event ids with the entity also resolves the "replication lag" problem in CQRS. See the CQRS chapter of *Microservices Patterns* for more.
+> Associating the list of event ids with the entity also resolves the "replication lag" problem in CQRS. See [CQRS](/event-driven-architecture/cqrs/) for more.
 
 ## Choosing an approach
 

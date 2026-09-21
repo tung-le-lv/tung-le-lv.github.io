@@ -19,14 +19,14 @@ export default () => {
 
   // ---- 2. Consume and project
   panel('p2', 2, 940, 0, 960, 430, 'Consume and project', 'pRed', '#e03131');
-  s.box('os', 975, 190, 160, 80, 'Order\nservice', { fill: 'blue', fs: F });
-  s.box('q2', 1235, 190, 160, 80, 'Message\nqueue', { fill: 'orange', fs: F });
-  s.box('proj', 1500, 190, 200, 80, 'Order projection\nservice', { fill: 'purple', fs: F });
-  s.box('cust', 1500, 70, 200, 70, 'Customer\nservice', { fill: 'teal', fs: F });
-  s.db('cdb', 1770, 55, 100, 95, 'Customer\nDB', { fill: 'yellow', fs: 14, ry: 12 });
-  s.db('view', 1500, 320, 200, 95, 'Customer-order\nmaterialized view', { fill: 'green', fs: 15, ry: 12 });
-  s.arrow('os', 'q2', { label: 'OrderCreated', labelFs: 15 });
-  s.arrow('q2', 'proj', { label: 'OrderCreated', labelFs: 15 });
+  s.box('os', 970, 190, 130, 80, 'Order\nservice', { fill: 'blue', fs: F });
+  s.box('q2', 1270, 190, 130, 80, 'Message\nqueue', { fill: 'orange', fs: F });
+  s.box('proj', 1570, 190, 190, 80, 'Order projection\nservice', { fill: 'purple', fs: F });
+  s.box('cust', 1570, 70, 190, 70, 'Customer\nservice', { fill: 'teal', fs: F });
+  s.db('cdb', 1800, 55, 90, 95, 'Customer\nDB', { fill: 'yellow', fs: 14, ry: 12 });
+  s.db('view', 1570, 320, 190, 95, 'Customer-order\nmaterialized view', { fill: 'green', fs: 15, ry: 12 });
+  s.arrow('os', 'q2', { label: 'OrderCreated', labelFs: 13 });
+  s.arrow('q2', 'proj', { label: 'OrderCreated', labelFs: 13 });
   s.arrow('proj', 'cust', { fromSide: 't', toSide: 'b', label: 'enrich', labelFs: 15, labelDx: 34 });
   s.arrow('cust', 'cdb', { both: true });
   s.arrow('proj', 'view', { fromSide: 'b', toSide: 't', label: 'writes', labelFs: 15, labelDx: 34 });
@@ -56,26 +56,26 @@ export default () => {
   // ---- 5. Transactional outbox
   panel('p5', 5, 1300, 470, 600, 440, 'Transactional outbox', 'pYellow', '#f08c00');
   s.box('os5', 1330, 540, 150, 60, 'Order service', { fill: 'green', fs: F });
-  s.frame('db5', 1330, 640, 270, 200, 'Database', { fill: 'pPurple', stroke: '#7048e8', fs: 16, ty: 165 });
-  s.box('ot', 1340, 690, 120, 65, 'Order\ntable', { fill: 'blue', fs: 16 });
-  s.box('obt', 1470, 690, 120, 65, 'Outbox\ntable', { fill: 'orange', fs: 16 });
-  s.box('rel', 1650, 690, 105, 65, 'Message\nrelay', { fill: 'purple', fs: 16 });
-  s.box('brk', 1800, 690, 90, 65, 'Message\nbroker', { fill: 'yellow', fs: 15 });
+  s.frame('db5', 1330, 640, 260, 200, 'One transaction', { fill: 'pPurple', stroke: '#7048e8', fs: 16, ty: 165 });
+  s.box('ot', 1342, 690, 110, 65, 'Order\ntable', { fill: 'blue', fs: 16 });
+  s.box('obt', 1466, 690, 110, 65, 'Outbox\ntable', { fill: 'orange', fs: 16 });
+  s.box('rel', 1660, 690, 100, 65, 'Message\nrelay', { fill: 'purple', fs: 16 });
+  s.box('brk', 1805, 690, 85, 65, 'Message\nbroker', { fill: 'yellow', fs: 15 });
   s.box('dst', 1765, 800, 125, 60, 'Destination\nsystem', { fill: 'gray', fs: 15 });
-  s.arrow('os5', 'ot', { fromSide: 'b', toSide: 't', t0: 0.3, label: 'one transaction', labelAt: [1440, 625], labelFs: 15 });
+  s.arrow('os5', 'ot', { fromSide: 'b', toSide: 't', t0: 0.3 });
   s.arrow('os5', 'obt', { fromSide: 'b', toSide: 't', t0: 0.75 });
-  s.arrow('rel', 'obt', { fromSide: 'l', toSide: 'r', label: 'reads', labelAt: [1627, 668], labelFs: 15 });
-  s.arrow('rel', 'brk', { label: 'publishes', labelAt: [1778, 668], labelFs: 14 });
+  s.arrow('rel', 'obt', { fromSide: 'l', toSide: 'r', label: 'polls', labelFs: 14 });
+  s.arrow('rel', 'brk', {});
   s.arrow('brk', 'dst', { fromSide: 'b', toSide: 't', dashed: true });
 
   // ---- 6. Event aggregation
   panel('p6', 6, 0, 950, 900, 400, 'Event aggregation', 'pGreen', '#2f9e44');
-  s.box('prod6', 30, 1110, 150, 75, 'Event\nproducer', { fill: 'green', fs: F });
+  s.box('prod6', 30, 1110, 130, 75, 'Event\nproducer', { fill: 'green', fs: F });
   s.frame('agg', 250, 1045, 360, 220, 'Event aggregator service', { fill: 'pPurple', stroke: '#7048e8', fs: 16 });
   ['Contact', 'Account', 'Address'].forEach((n, i) => s.box(`ag${i}`, 268 + i * 112, 1115, 100, 75, `${n}\nevent`, { fill: ['blue', 'teal', 'yellow'][i], fs: 15 }));
   s.box('agg-out', 670, 1090, 205, 75, 'Create customer\n(coarse-grained event)', { fill: 'orange', fs: 15 });
   s.box('cons6', 670, 1215, 205, 70, 'Create customer\nconsumer service', { fill: 'purple', fs: 15 });
-  s.arrow('prod6', 'agg', { label: 'fine-grained\nevents', labelAt: [215, 1120], labelFs: 15 });
+  s.arrow('prod6', 'agg');
   s.arrow('agg', 'agg-out', { fromSide: 'r', toSide: 'l', t0: 0.45, t1: 0.5 });
   s.arrow('agg-out', 'cons6', { fromSide: 'b', toSide: 't' });
   s.note('n6', 30, 1285, 560, 50, 'Create customer = create contact + create account + create address', { fs: 15 });
@@ -84,7 +84,7 @@ export default () => {
   panel('p7', 7, 940, 950, 960, 400, 'Saga', 'pPurple', '#7048e8');
   s.box('os7', 975, 1150, 150, 70, 'Order\nservice', { fill: 'green', fs: F });
   s.db('odb', 985, 1255, 130, 80, 'Orders', { fill: 'yellow', fs: 16, ry: 11 });
-  s.box('orch', 1310, 1140, 220, 95, 'Order saga\norchestrator', { fill: 'teal', fs: F });
+  s.box('orch', 1330, 1140, 210, 95, 'Order saga\norchestrator', { fill: 'teal', fs: F });
   s.box('pay', 1730, 1030, 150, 65, 'Payment\nservice', { fill: 'orange', fs: 16 });
   s.box('shp', 1730, 1250, 150, 65, 'Shipping\nservice', { fill: 'orange', fs: 16 });
   s.arrow('os7', 'orch', { label: '1. create order', labelAt: [1220, 1170], labelFs: 15 });
@@ -94,6 +94,6 @@ export default () => {
   // shipping: command along the bottom lane, reply back up along a higher lane
   s.arrow('orch', 'shp', { fromSide: 'b', toSide: 'l', t0: 0.8, via: [[1486, 1282]], label: '4. initiate shipping (command)', labelAt: [1610, 1282], labelFs: 15 });
   s.arrow('shp', 'orch', { fromSide: 't', toSide: 'r', t0: 0.3, t1: 0.7, dashed: true, via: [[1775, 1206]], label: '5. order shipped', labelAt: [1655, 1206], labelFs: 15 });
-  s.arrow('orch', 'odb', { fromSide: 'b', toSide: 'r', t0: 0.2, via: [[1354, 1295]], label: '6. update order status', labelAt: [1245, 1295], labelFs: 15 });
+  s.arrow('orch', 'odb', { fromSide: 'b', toSide: 'r', t0: 0.2, via: [[1354, 1295]], label: '6. update status', labelFs: 15 });
   return { skeleton: s.elements(), scale: 1.5 };
 };
