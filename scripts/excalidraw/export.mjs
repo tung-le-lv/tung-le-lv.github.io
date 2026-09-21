@@ -25,6 +25,15 @@ page.on('pageerror', (e) => console.error('page error:', e.message.slice(0, 300)
 await page.goto(`http://localhost:${port}/`);
 await page.waitForFunction('window.__ready === true', { timeout: 90000 });
 
+// Warm up: the handwriting font (Excalifont) is only fetched when something is first drawn with it. If the elements are
+// measured before that, text boxes come out too narrow and arrows are clipped/drawn through their labels.
+await page.evaluate(async () => {
+  const { convertToExcalidrawElements, exportToBlob } = window.__ex;
+  const warm = convertToExcalidrawElements([{ type: 'text', x: 0, y: 0, text: 'warm up 0123456789 ABC abc', fontSize: 20 }]);
+  await exportToBlob({ elements: warm, appState: { exportBackground: true }, files: null, mimeType: 'image/png' });
+  await document.fonts.ready;
+});
+
 for (const name of names) {
   const mod = (await import(pathToFileURL(path.join(srcDir, `${name}.mjs`)).href + `?t=${Date.now()}`)).default;
   const { skeleton, scale = 2, padding = 32 } = await mod();

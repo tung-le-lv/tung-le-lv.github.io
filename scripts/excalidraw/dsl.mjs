@@ -9,6 +9,9 @@ export const COLORS = {
 const ink = '#1e1e1e';
 const col = (c) => COLORS[c] ?? c ?? 'transparent';
 
+// two non-breaking spaces each side: the gap Excalidraw cuts in the arrow follows the text box, so this keeps the line clear of the letters
+const pad = (t) => String(t).split('\n').map((l) => `\u00a0\u00a0${l}\u00a0\u00a0`).join('\n');
+
 export function scene({ fs = 20 } = {}) {
   const back = [];   // frames / panels (drawn first)
   const mid = [];    // shapes
@@ -102,7 +105,7 @@ export function scene({ fs = 20 } = {}) {
         type: 'arrow', x: p0[0], y: p0[1], width: Math.max(...xs) - Math.min(...xs), height: Math.max(...ys) - Math.min(...ys), points: pts,
         start: { id: from }, end: { id: to }, strokeColor: o.color ?? ink, strokeWidth: o.sw ?? 2, strokeStyle: o.dashed ? 'dashed' : 'solid', roughness: 1,
         endArrowhead: o.head === false ? null : 'arrow', startArrowhead: o.both ? 'arrow' : null,
-        ...(o.label ? { label: { text: o.label, fontSize: o.labelFs ?? fs - 2, strokeColor: o.labelColor ?? o.color ?? ink } } : {}),
+        ...(o.label ? { label: { text: pad(o.label), fontSize: o.labelFs ?? fs - 2, strokeColor: o.labelColor ?? o.color ?? ink } } : {}),
       });
     },
     // Free connector between absolute points (no binding).
@@ -113,7 +116,7 @@ export function scene({ fs = 20 } = {}) {
       arrows.push({ type: 'arrow', x: x0, y: y0, width: Math.max(...xs) - Math.min(...xs), height: Math.max(...ys) - Math.min(...ys), points: pts,
         strokeColor: o.color ?? ink, strokeWidth: o.sw ?? 2, strokeStyle: o.dashed ? 'dashed' : 'solid', roughness: 1,
         endArrowhead: o.head === false ? null : 'arrow', startArrowhead: o.both ? 'arrow' : null,
-        ...(o.label ? { label: { text: o.label, fontSize: o.labelFs ?? fs - 2, strokeColor: o.color ?? ink } } : {}) });
+        ...(o.label ? { label: { text: pad(o.label), fontSize: o.labelFs ?? fs - 2, strokeColor: o.color ?? ink } } : {}) });
     },
     elements() { return [...back, ...mid, ...arrows, ...front]; },
   };
