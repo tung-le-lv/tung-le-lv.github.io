@@ -89,8 +89,8 @@ export default () => {
   s.box('shp', 1730, 1250, 150, 65, 'Shipping\nservice', { fill: 'orange', fs: 16 });
   s.arrow('os7', 'orch', { label: '1. create order', labelAt: [1220, 1170], labelFs: 15 });
   // payment: command along the top lane, reply along a lower lane
-  s.arrow('orch', 'pay', { fromSide: 't', toSide: 'l', t0: 0.2, via: [[1354, 1032]], label: '2. process payment (command)', labelAt: [1540, 1032], labelFs: 15 });
-  s.arrow('pay', 'orch', { fromSide: 'b', toSide: 't', t0: 0.3, t1: 0.8, dashed: true, via: [[1775, 1090], [1486, 1090]], label: '3. payment completed', labelAt: [1630, 1090], labelFs: 15 });
+  s.arrow('orch', 'pay', { fromSide: 't', toSide: 'l', t0: 0.2, t1: 0.5, via: [[1372, 1062]], label: '2. process payment (command)', labelFs: 15 });
+  s.arrow('pay', 'orch', { fromSide: 'b', toSide: 'r', t0: 0.3, t1: 0.25, dashed: true, via: [[1775, 1164]], label: '3. payment completed', labelFs: 15 });
   // shipping: command along the bottom lane, reply back up along a higher lane
   s.arrow('orch', 'shp', { fromSide: 'b', toSide: 'l', t0: 0.8, via: [[1486, 1282]], label: '4. initiate shipping (command)', labelAt: [1610, 1282], labelFs: 15 });
   s.arrow('shp', 'orch', { fromSide: 't', toSide: 'r', t0: 0.3, t1: 0.7, dashed: true, via: [[1775, 1206]], label: '5. order shipped', labelAt: [1655, 1206], labelFs: 15 });

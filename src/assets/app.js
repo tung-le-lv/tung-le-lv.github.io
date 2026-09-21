@@ -236,46 +236,186 @@ document.addEventListener('pointerover', (e) => {
   if (internal(a) && a.pathname !== location.pathname) fetchPage(a.pathname + a.search).catch(() => {});
 });
 
-/* ---------------- Image lightbox ---------------- */
+/* ---------------- Image lightbox: continuous zoom and pan ----------------
+   Wheel / trackpad pinch / two-finger pinch zoom around the pointer, drag to pan, a single click or tap to jump
+   between fit and zoomed, + / - / 0 keys and toolbar buttons. Zoom is a continuous scale, not two fixed levels. */
 let lb, lbOpener;
+const Z = { s: 1, x: 0, y: 0, fit: 1, min: 1, max: 4, nw: 0, nh: 0 };
+const pointers = new Map();
+let gesture = null, moved = false;
+
+const lbEls = () => ({ stage: $('.lb-stage', lb), img: $('.lb-stage img', lb), pct: $('.lb-pct', lb) });
+const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+
+function lbLayout(keepView) {
+  const { stage } = lbEls();
+  const W = stage.clientWidth, H = stage.clientHeight;
+  const pad = W < 700 ? 16 : 48;
+  const wasFit = Math.abs(Z.s - Z.fit) < 1e-3;
+  Z.fit = Math.min((W - pad * 2) / Z.nw, (H - pad * 2) / Z.nh, 1);
+  Z.min = Z.fit;
+  Z.max = Math.max(4, Z.fit * 4);
+  if (!keepView || wasFit) { Z.s = Z.fit; Z.x = (W - Z.nw * Z.s) / 2; Z.y = (H - Z.nh * Z.s) / 2; }
+  lbApply();
+}
+function lbClampPan() {
+  const { stage } = lbEls();
+  const W = stage.clientWidth, H = stage.clientHeight, w = Z.nw * Z.s, h = Z.nh * Z.s, m = 40;
+  Z.x = w <= W ? (W - w) / 2 : clamp(Z.x, W - w - m, m);      // smaller than the stage: centre. larger: keep an edge reachable
+  Z.y = h <= H ? (H - h) / 2 : clamp(Z.y, H - h - m, m);
+}
+function lbApply() {
+  lbClampPan();
+  const { img, pct } = lbEls();
+  img.style.transform = `translate(${Z.x}px, ${Z.y}px) scale(${Z.s})`;
+  pct.textContent = `${Math.round(Z.s * 100)}%`;
+  lb.classList.toggle('zoomed', Z.s > Z.fit + 1e-3);
+  $('.lb-out', lb).disabled = Z.s <= Z.min + 1e-3;
+  $('.lb-in', lb).disabled = Z.s >= Z.max - 1e-3;
+}
+// zoom to scale `ns`, keeping the point (cx, cy) in stage coordinates fixed under the cursor / fingers
+function lbZoomAt(ns, cx, cy, animate) {
+  ns = clamp(ns, Z.min, Z.max);
+  const k = ns / Z.s;
+  Z.x = cx - (cx - Z.x) * k;
+  Z.y = cy - (cy - Z.y) * k;
+  Z.s = ns;
+  lbSetAnimated(animate);
+  lbApply();
+}
+function lbSetAnimated(on) { lbEls().img.classList.toggle('anim', !!on && !reduceMotion.matches); }
+const lbCentre = () => { const { stage } = lbEls(); return [stage.clientWidth / 2, stage.clientHeight / 2]; };
+const stagePoint = (e) => { const r = lbEls().stage.getBoundingClientRect(); return [e.clientX - r.left, e.clientY - r.top]; };
+function lbStep(factor) { const [cx, cy] = lbCentre(); lbZoomAt(Z.s * factor, cx, cy, true); }
+function lbReset() { const [cx, cy] = lbCentre(); Z.s = Z.fit; Z.x = 0; Z.y = 0; lbSetAnimated(true); lbLayout(false); }
+
+function lbToggleAt(cx, cy) {
+  const target = Math.abs(Z.s - Z.fit) < 1e-3 ? Math.min(Z.max, Math.max(1, Z.fit * 2.5)) : Z.fit;
+  lbZoomAt(target, cx, cy, true);
+}
+
 function buildLightbox() {
   lb = document.createElement('div');
   lb.id = 'lightbox';
   lb.hidden = true;
+  lb.setAttribute('role', 'dialog');
+  lb.setAttribute('aria-modal', 'true');
+  lb.setAttribute('aria-label', 'Image viewer');
   lb.innerHTML = `<div class="lb-backdrop"></div>
-    <div class="lb-stage"><img alt=""></div>
-    <div class="lb-bar"><span class="lb-caption"></span><span class="lb-hint">Click image to zoom · Esc to close</span></div>
+    <div class="lb-stage"><img alt="" draggable="false"></div>
+    <div class="lb-bar"><span class="lb-caption"></span>
+      <div class="lb-tools" role="toolbar" aria-label="Zoom">
+        <button type="button" class="lb-out" aria-label="Zoom out" title="Zoom out (-)">&minus;</button>
+        <button type="button" class="lb-pct" aria-label="Reset zoom" title="Fit to screen (0)">100%</button>
+        <button type="button" class="lb-in" aria-label="Zoom in" title="Zoom in (+)">+</button>
+      </div>
+      <span class="lb-hint">Click to zoom · scroll or pinch for more · drag to move · Esc to close</span></div>
     <button type="button" class="lb-close" aria-label="Close image">&times;</button>`;
   document.body.appendChild(lb);
-  $('.lb-backdrop', lb).addEventListener('click', closeLightbox);
+  const { stage } = lbEls();
+
   $('.lb-close', lb).addEventListener('click', closeLightbox);
-  $('.lb-stage', lb).addEventListener('click', (e) => {
-    if (e.target.tagName !== 'IMG') return closeLightbox(); // click on empty stage closes
-    lb.classList.toggle('zoomed');
+  $('.lb-in', lb).addEventListener('click', () => lbStep(1.5));
+  $('.lb-out', lb).addEventListener('click', () => lbStep(1 / 1.5));
+  $('.lb-pct', lb).addEventListener('click', lbReset);
+
+  stage.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    const [cx, cy] = stagePoint(e);
+    const unit = e.deltaMode === 1 ? 16 : 1;                       // lines -> pixels
+    const k = Math.exp(-e.deltaY * unit * (e.ctrlKey ? 0.01 : 0.0018));   // trackpad pinch arrives as ctrl+wheel
+    lbSetAnimated(false);
+    lbZoomAt(Z.s * k, cx, cy, false);
+  }, { passive: false });
+
+  stage.addEventListener('pointerdown', (e) => {
+    stage.setPointerCapture(e.pointerId);
+    pointers.set(e.pointerId, [e.clientX, e.clientY]);
+    moved = false;
+    lbSetAnimated(false);
+    if (pointers.size === 2) {
+      const [a, b] = [...pointers.values()];
+      gesture = { dist: Math.hypot(a[0] - b[0], a[1] - b[1]), s: Z.s, x: Z.x, y: Z.y, mid: [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2] };
+    }
   });
+  stage.addEventListener('pointermove', (e) => {
+    if (!pointers.has(e.pointerId)) return;
+    const prev = pointers.get(e.pointerId);
+    pointers.set(e.pointerId, [e.clientX, e.clientY]);
+    if (pointers.size >= 2 && gesture) {                            // pinch
+      const [a, b] = [...pointers.values()];
+      const dist = Math.hypot(a[0] - b[0], a[1] - b[1]);
+      const r = stage.getBoundingClientRect();
+      const mid = [(a[0] + b[0]) / 2 - r.left, (a[1] + b[1]) / 2 - r.top];
+      const ns = clamp(gesture.s * (dist / gesture.dist), Z.min, Z.max);
+      const k = ns / gesture.s;
+      const gm = [gesture.mid[0] - r.left, gesture.mid[1] - r.top];
+      Z.s = ns;
+      Z.x = mid[0] - (gm[0] - gesture.x) * k;                       // the point under the fingers stays put, and the pair can pan
+      Z.y = mid[1] - (gm[1] - gesture.y) * k;
+      moved = true; lbApply();
+    } else if (pointers.size === 1 && Z.s > Z.fit + 1e-3) {         // drag to pan (only when zoomed in)
+      const dx = e.clientX - prev[0], dy = e.clientY - prev[1];
+      if (Math.abs(dx) + Math.abs(dy) > 0) moved = true;
+      Z.x += dx; Z.y += dy; lbApply();
+      lb.classList.add('panning');
+    } else if (Math.abs(e.clientX - prev[0]) + Math.abs(e.clientY - prev[1]) > 3) moved = true;
+  });
+  const end = (e) => {
+    if (!pointers.has(e.pointerId)) return;
+    pointers.delete(e.pointerId);
+    if (pointers.size < 2) gesture = null;
+    lb.classList.remove('panning');
+    if (pointers.size > 0) return;
+    if (moved) return;
+    // a tap / click without dragging
+    // pointer capture makes e.target the stage, so decide by position whether the tap landed on the image
+    const ir = lbEls().img.getBoundingClientRect();
+    const onImage = e.clientX >= ir.left && e.clientX <= ir.right && e.clientY >= ir.top && e.clientY <= ir.bottom;
+    if (onImage) { const [cx, cy] = stagePoint(e); lbToggleAt(cx, cy); }   // one click / tap zooms in, the next zooms back out
+    else closeLightbox();                                                   // tap on the dark area closes
+  };
+  stage.addEventListener('pointerup', end);
+  stage.addEventListener('pointercancel', end);
+  stage.addEventListener('dblclick', (e) => e.preventDefault());   // a double-click is just two toggles: ignore the browser's text selection
+  addEventListener('resize', () => { if (!lb.hidden) lbLayout(true); });
 }
-function openLightbox(img) {
+
+function openLightbox(thumb) {
   if (!lb) buildLightbox();
-  const big = $('.lb-stage img', lb);
-  big.src = img.currentSrc || img.src;
-  big.alt = img.alt;
-  $('.lb-caption', lb).textContent = img.alt;
-  lb.classList.remove('zoomed');
+  const { img } = lbEls();
+  const src = thumb.currentSrc || thumb.src;
+  img.alt = thumb.alt;
+  $('.lb-caption', lb).textContent = thumb.alt;
+  lbOpener = thumb;
+  pointers.clear(); gesture = null;
   lb.hidden = false;
-  lbOpener = img;
   document.body.classList.add('lb-open');
   $('.lb-close', lb).focus({ preventScroll: true });
-  if (!reduceMotion.matches && big.animate) {
-    // FLIP: grow from the thumbnail's position to its enlarged position
-    const from = img.getBoundingClientRect(), to = big.getBoundingClientRect();
-    if (to.width && to.height) {
-      big.animate([
-        { transform: `translate(${from.left - to.left}px, ${from.top - to.top}px) scale(${from.width / to.width}, ${from.height / to.height})`, opacity: .6 },
-        { transform: 'none', opacity: 1 },
-      ], { duration: 280, easing: 'cubic-bezier(.2,.7,.2,1)' });
+
+  const start = () => {
+    Z.nw = img.naturalWidth || thumb.naturalWidth; Z.nh = img.naturalHeight || thumb.naturalHeight;
+    img.style.width = `${Z.nw}px`; img.style.height = `${Z.nh}px`;
+    lbSetAnimated(false);
+    lbLayout(false);
+    if (!reduceMotion.matches) {
+      // grow out of the thumbnail
+      const from = thumb.getBoundingClientRect(), r = lbEls().stage.getBoundingClientRect();
+      const fs = from.width / Z.nw;
+      const end = { s: Z.s, x: Z.x, y: Z.y };
+      Z.s = fs; Z.x = from.left - r.left; Z.y = from.top - r.top;
+      img.style.transform = `translate(${Z.x}px, ${Z.y}px) scale(${Z.s})`;
+      void img.offsetWidth;
+      lbSetAnimated(true);
+      Object.assign(Z, end);
+      img.style.transform = `translate(${Z.x}px, ${Z.y}px) scale(${Z.s})`;
+      lbApply();
+      $('.lb-backdrop', lb).animate([{ opacity: 0 }, { opacity: 1 }], { duration: 220 });
     }
-    $('.lb-backdrop', lb).animate([{ opacity: 0 }, { opacity: 1 }], { duration: 220 });
-  }
+  };
+  img.onload = start;
+  img.src = src;
+  if (img.complete && img.naturalWidth) start();
 }
 function closeLightbox() {
   if (!lb || lb.hidden) return;
@@ -288,7 +428,16 @@ document.addEventListener('click', (e) => {
   if (img && !img.closest('a')) openLightbox(img);
 });
 document.addEventListener('keydown', (e) => {
-  if (lb && !lb.hidden && e.key === 'Escape') { e.stopPropagation(); closeLightbox(); return; }
+  if (lb && !lb.hidden) {
+    const k = e.key;
+    if (k === 'Escape') { e.stopPropagation(); closeLightbox(); return; }
+    if (k === '+' || k === '=') { e.preventDefault(); lbStep(1.4); return; }
+    if (k === '-' || k === '_') { e.preventDefault(); lbStep(1 / 1.4); return; }
+    if (k === '0') { e.preventDefault(); lbReset(); return; }
+    const pan = { ArrowLeft: [60, 0], ArrowRight: [-60, 0], ArrowUp: [0, 60], ArrowDown: [0, -60] }[k];
+    if (pan) { e.preventDefault(); lbSetAnimated(false); Z.x += pan[0]; Z.y += pan[1]; lbApply(); return; }
+    return;
+  }
   if ((e.key === 'Enter' || e.key === ' ') && e.target.matches?.('.prose img')) { e.preventDefault(); openLightbox(e.target); }
 }, true);
 
