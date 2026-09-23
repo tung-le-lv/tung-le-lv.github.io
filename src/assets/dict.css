@@ -4,12 +4,12 @@
   --d-paper: var(--surface-2); --d-surface: var(--surface); --d-ink: var(--text); --d-ink2: var(--text-2);
   --d-muted: var(--muted); --d-line: var(--border); --d-hair: color-mix(in srgb, var(--border) 55%, transparent);
   --d-accent: var(--accent); --d-accent-ink: var(--accent); --d-accent-soft: color-mix(in srgb, var(--accent) 12%, transparent);
-  --d-flag: #a8443a; --d-flag-soft: #f6e9e6; --d-amb: #7a5c1f; --d-amb-soft: #f4eedf; --d-grn: #33604a; --d-grn-soft: #e4eee8;
+  --d-amb: #7a5c1f; --d-amb-soft: #f4eedf; --d-grn: #33604a; --d-grn-soft: #e4eee8;
   --d-plate: #ffffff; --d-plate-line: #dee3e7; --d-shadow: 0 1px 2px rgb(20 30 40 / .06);
   --d-hdr: 76px; --d-disp: var(--sans); --d-sans: var(--sans); --d-mono: var(--mono);
   display: flex; flex-direction: column; gap: 14px; margin-top: 24px; font-size: 16.5px; line-height: 1.65; color: var(--text-2);
 }
-:root[data-theme="dark"] .dict { --d-flag: #d28d80; --d-flag-soft: #2a1d1a; --d-amb: #d0b475; --d-amb-soft: #25211a; --d-grn: #8cbfa3; --d-grn-soft: #182420; }
+:root[data-theme="dark"] .dict { --d-amb: #d0b475; --d-amb-soft: #25211a; --d-grn: #8cbfa3; --d-grn-soft: #182420; }
 .dict a { color: var(--d-accent-ink); }
 .dict h2, .dict h3 { color: var(--text); }
 /* Long-form section headings/prose for standalone single-diagram articles (direct children of
@@ -135,10 +135,8 @@
 .dict dl.facts{margin:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
   gap:1px;background:var(--d-hair);border:1px solid var(--d-hair);border-radius:3px;overflow:hidden}
 .dict dl.facts>div{background:var(--d-surface);padding:13px 15px}
-.dict dl.facts>div.fail{background:var(--d-flag-soft)}
 .dict dt{font-family:var(--d-mono);font-size:9.5px;letter-spacing:.11em;text-transform:uppercase;
   color:var(--d-muted);margin:0 0 4px}
-.dict div.fail dt{color:var(--d-flag)}
 .dict dd{margin:0;font-size:13.8px;line-height:1.55;color:var(--d-ink2)}
 .dict ol.listing{margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:1px;
   background:var(--d-hair);border:1px solid var(--d-hair);border-radius:4px;overflow:hidden}
