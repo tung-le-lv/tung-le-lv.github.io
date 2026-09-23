@@ -154,9 +154,10 @@ const bar = $('#progress');
 const toTop = $('.to-top');
 function onScroll() {
   const h = document.documentElement.scrollHeight - innerHeight;
-  const article = $('#content').dataset.kind === 'article';
+  const kind = $('#content').dataset.kind;
+  const article = kind === 'article';
   bar.style.transform = `scaleX(${article && h > 0 ? Math.min(1, scrollY / h) : 0})`;
-  toTop.classList.toggle('visible', article && scrollY > 500); // back-to-top only on long reads
+  toTop.classList.toggle('visible', (article || kind === 'home') && scrollY > 500); // back-to-top on long reads and the home page
 }
 toTop.addEventListener('click', () => {
   scrollTo({ top: 0, behavior: reduceMotion.matches ? 'auto' : 'smooth' });
