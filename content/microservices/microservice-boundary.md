@@ -3,6 +3,7 @@ title: Microservice Boundary
 description: "How to find the right microservice boundaries: what a boundary is, the rules it must follow, techniques for finding bounded contexts, twelve measurable reasons to split a service further, red flags, and a checklist to test a boundary."
 tags: [microservices, bounded-context, service-boundary, granularity, decomposition, ddd]
 updated: 2026-09-20
+section: Patterns
 order: 0
 ---
 

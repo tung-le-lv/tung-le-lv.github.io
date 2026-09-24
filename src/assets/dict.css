@@ -68,7 +68,7 @@
 .dict .freq h3::before{content:counter(tier);display:inline-flex;align-items:center;justify-content:center;
   width:23px;height:23px;border-radius:50%;flex:none;font-family:var(--d-mono);font-weight:700;
   font-size:11.5px;color:var(--d-accent-ink);background:var(--d-accent-soft)}
-.dict .freq .gsub{margin:4px 0 12px 33px;font-size:12.6px;color:var(--d-muted);max-width:80ch;line-height:1.5}
+.dict .freq .gsub{margin:4px 0 12px 33px;font-size:12.6px;color:var(--d-muted);line-height:1.5}
 .dict .freq ul{list-style:none;margin:0 0 0 33px;padding:0;display:grid;
   grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:1px 24px}
 .dict .freq li{padding:8px 10px;margin:0 -10px;border-radius:8px;font-size:13px;line-height:1.5;
@@ -112,7 +112,7 @@
 .dict .canon{background:var(--d-surface);border:1px solid var(--d-line);border-radius:4px;
   padding:18px 20px 16px;box-shadow:var(--d-shadow)}
 .dict .canon>h2{font-family:var(--d-disp);font-weight:700;font-size:17px;margin:0 0 4px}
-.dict .canon>p{margin:0 0 14px;font-size:13.2px;color:var(--d-muted);max-width:74ch}
+.dict .canon>p{margin:0 0 14px;font-size:13.2px;color:var(--d-muted)}
 .dict .canoncols{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px}
 .dict .canoncols h3{font-family:var(--d-mono);font-size:9.5px;letter-spacing:.11em;text-transform:uppercase;
   color:var(--d-muted);margin:0 0 8px;font-weight:600}

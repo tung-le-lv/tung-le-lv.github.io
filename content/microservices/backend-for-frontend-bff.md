@@ -3,6 +3,7 @@ title: Backend for Frontend (BFF)
 description: Give each type of client its own API gateway — the benefits of the pattern, and why a BFF is about operations, trust boundaries and team autonomy, not just response shape.
 tags: [bff, api-gateway, graphql, serverless]
 updated: 2025-03-24
+section: Patterns
 order: 1
 ---
 
