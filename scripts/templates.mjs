@@ -171,7 +171,7 @@ export function homeView(ctx) {
 </section>
 <section>
   <h2 class="section-title">Latest articles</h2>
-  <div class="grid articles">${all.slice(0, 6).map((a) => articleCard(ctx, a, { showCat: true })).join('')}</div>
+  <div class="grid articles">${all.filter((a) => !a.overview).slice(0, 6).map((a) => articleCard(ctx, a, { showCat: true })).join('')}</div>
 </section>
 <section>
   <h2 class="section-title">Popular tags</h2>

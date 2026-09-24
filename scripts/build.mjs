@@ -126,6 +126,7 @@ async function loadSite() {
       section: data.section || '',
       order: data.order ?? 1000,
       draft: !!data.draft,
+      overview: !!data.overview, // hub/index page: kept out of the home page's "Latest articles"
       raw,
       slug,
       category: cat,
