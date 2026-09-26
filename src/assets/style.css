@@ -257,7 +257,7 @@ kbd { font: 500 11px var(--mono); padding: 2px 6px; border: 1px solid var(--bord
 .diagram { margin: 1.6em 0; padding: 22px; overflow-x: auto; text-align: center; border: 1px solid var(--border); border-radius: 12px; background: var(--surface); }
 .diagram pre { margin: 0; font: 13px var(--mono); color: var(--muted); white-space: pre-wrap; text-align: left; }
 .diagram pre[data-processed] { font: inherit; text-align: center; }
-.diagram svg { max-width: 100%; height: auto; }
+.diagram svg { max-width: 100%; height: auto; cursor: zoom-in; }
 
 /* Callouts */
 .callout { --k: var(--brand); margin: 1.6em 0; padding: 16px 20px 6px; border: 1px solid color-mix(in srgb, var(--k) 30%, var(--border)); border-radius: 12px; background: color-mix(in srgb, var(--k) 7%, var(--surface)); color: var(--text-2); }
@@ -292,6 +292,7 @@ body.lb-open { overflow: hidden; }
 .lb-backdrop { position: absolute; inset: 0; background: rgb(8 10 16 / .82); backdrop-filter: blur(6px); }
 .lb-stage { position: absolute; inset: 0 0 56px 0; overflow: hidden; touch-action: none; overscroll-behavior: contain; user-select: none; -webkit-user-select: none; cursor: default; }
 .lb-stage img { position: absolute; left: 0; top: 0; max-width: none; max-height: none; transform-origin: 0 0; background: #fff; border-radius: 6px; box-shadow: 0 24px 80px rgb(0 0 0 / .5); cursor: zoom-in; will-change: transform; -webkit-user-drag: none; pointer-events: auto; }
+.lb-stage img.lb-diagram { background: var(--surface); }
 .lb-stage img.anim { transition: transform .28s cubic-bezier(.2,.7,.2,1); }
 #lightbox.zoomed .lb-stage img { cursor: grab; }
 #lightbox.panning .lb-stage img { cursor: grabbing; }

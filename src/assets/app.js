@@ -135,10 +135,21 @@ async function renderDiagrams() {
   mermaidP ??= import('https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs').then((m) => m.default);
   let mermaid;
   try { mermaid = await mermaidP; } catch { return; } // offline: raw source stays visible
+  // mermaid measures text with whatever font is active right now to size boxes and edge labels. If Inter is still
+  // loading, it sizes against the fallback font, then Inter swaps in moments later with wider glyphs and overflows
+  // the already-fixed box — so wait for it first (capped, in case the font host is slow or unreachable).
+  await Promise.race([
+    Promise.all(['400 16px Inter', '600 16px Inter'].map((f) => document.fonts.load(f).catch(() => {}))).then(() => document.fonts.ready),
+    new Promise((r) => setTimeout(r, 2000)),
+  ]);
   const dark = isDark();
   mermaid.initialize({
     startOnLoad: false, theme: dark ? 'dark' : 'neutral', fontFamily: 'Inter, system-ui, sans-serif',
     themeVariables: dark ? { primaryColor: '#1e2433', primaryBorderColor: '#0ea5e9', lineColor: '#8892a4', primaryTextColor: '#e8ebf2' } : { primaryColor: '#e0f4ff', primaryBorderColor: '#0ea5e9' },
+    // flowchart node/edge labels default to an HTML <foreignObject>, which some engines (Safari, Firefox) don't
+    // rescale correctly when the SVG itself is later shrunk to fit a narrower column — the box shrinks but the
+    // label text doesn't, so it overflows. Native SVG <text> always scales correctly with the viewBox.
+    flowchart: { htmlLabels: false },
   });
   for (const n of nodes) { n.removeAttribute('data-processed'); n.textContent = n.dataset.src; }
   try { await mermaid.run({ nodes }); } catch (e) { console.warn('mermaid', e); }
@@ -146,6 +157,10 @@ async function renderDiagrams() {
   for (const n of nodes) {
     const svg = $('svg', n), w = svg?.viewBox?.baseVal?.width;
     if (w > 1000) svg.style.minWidth = `${w}px`; // only truly wide diagrams scroll; the rest shrink to fit
+    if (!svg) continue;
+    svg.tabIndex = 0;
+    svg.setAttribute('role', 'button');
+    svg.setAttribute('aria-label', 'Enlarge diagram');
   }
 }
 
@@ -382,12 +397,14 @@ function buildLightbox() {
   addEventListener('resize', () => { if (!lb.hidden) lbLayout(true); });
 }
 
-function openLightbox(thumb) {
+function openLightbox(thumb, opts = {}) {
   if (!lb) buildLightbox();
   const { img } = lbEls();
-  const src = thumb.currentSrc || thumb.src;
-  img.alt = thumb.alt;
-  $('.lb-caption', lb).textContent = thumb.alt;
+  const src = opts.src ?? (thumb.currentSrc || thumb.src);
+  const alt = opts.alt ?? thumb.alt ?? '';
+  img.alt = alt;
+  img.classList.toggle('lb-diagram', !!opts.diagram);
+  $('.lb-caption', lb).textContent = alt;
   lbOpener = thumb;
   pointers.clear(); gesture = null;
   lb.hidden = false;
@@ -395,7 +412,7 @@ function openLightbox(thumb) {
   $('.lb-close', lb).focus({ preventScroll: true });
 
   const start = () => {
-    Z.nw = img.naturalWidth || thumb.naturalWidth; Z.nh = img.naturalHeight || thumb.naturalHeight;
+    Z.nw = opts.width || img.naturalWidth || thumb.naturalWidth; Z.nh = opts.height || img.naturalHeight || thumb.naturalHeight;
     img.style.width = `${Z.nw}px`; img.style.height = `${Z.nh}px`;
     lbSetAnimated(false);
     lbLayout(false);
@@ -418,6 +435,16 @@ function openLightbox(thumb) {
   img.src = src;
   if (img.complete && img.naturalWidth) start();
 }
+// a mermaid diagram opens the same lightbox: serialize the live SVG (styles and all) into an image source,
+// using its own coordinate system (the viewBox) as "natural size" so it stays crisp at any zoom level
+function openDiagramLightbox(svg) {
+  const vb = svg.viewBox?.baseVal;
+  const r = svg.getBoundingClientRect();
+  const w = vb?.width || r.width, h = vb?.height || r.height;
+  const xml = new XMLSerializer().serializeToString(svg);
+  const src = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(xml)}`;
+  openLightbox(svg, { src, width: w, height: h, alt: 'Diagram', diagram: true });
+}
 function closeLightbox() {
   if (!lb || lb.hidden) return;
   const done = () => { lb.hidden = true; document.body.classList.remove('lb-open'); lbOpener?.focus?.({ preventScroll: true }); lbOpener = null; };
@@ -426,7 +453,9 @@ function closeLightbox() {
 }
 document.addEventListener('click', (e) => {
   const img = e.target.closest?.('.prose img');
-  if (img && !img.closest('a')) openLightbox(img);
+  if (img && !img.closest('a')) { openLightbox(img); return; }
+  const svg = e.target.closest?.('.diagram svg');
+  if (svg && !svg.closest('a')) openDiagramLightbox(svg);
 });
 document.addEventListener('keydown', (e) => {
   if (lb && !lb.hidden) {
@@ -440,6 +469,7 @@ document.addEventListener('keydown', (e) => {
     return;
   }
   if ((e.key === 'Enter' || e.key === ' ') && e.target.matches?.('.prose img')) { e.preventDefault(); openLightbox(e.target); }
+  if ((e.key === 'Enter' || e.key === ' ') && e.target.matches?.('.diagram svg')) { e.preventDefault(); openDiagramLightbox(e.target); }
 }, true);
 
 /* ---------------- Search ---------------- */
