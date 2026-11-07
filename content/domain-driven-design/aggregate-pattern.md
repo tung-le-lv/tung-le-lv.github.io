@@ -7,12 +7,7 @@ section: Tactical Design
 order: 1
 ---
 
-> [!TIP] The short version
-> An **Aggregate** is a cluster of Entities and Value Objects treated as one unit for data changes. One Entity is the **root**, and it is the only part outsiders may hold a reference to. Everything inside the boundary is consistent when the transaction commits. Anything outside catches up later.
->
-> Four rules of thumb keep it working: protect true business invariants inside the boundary, keep Aggregates small, reference other Aggregates by identity, and update them with eventual consistency.
-
-## The problem: a model with no edges
+## Problem context
 
 In a rich object model, references lead everywhere. From a customer you can walk to their orders, line items, products, inventory records and delivery logs. That is harmless with one user. With many users changing overlapping parts of the graph, two questions have no good answer: how much do you lock, and how much must you reload before you can trust a business rule?
 

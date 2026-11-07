@@ -1,12 +1,5 @@
 [
   {
-    "slug": "architect",
-    "title": "Architect",
-    "icon": "compass",
-    "color": "#8b5cf6",
-    "description": "The software architect's diagram dictionary: 110 diagram types — which to draw, when, and what it must show."
-  },
-  {
     "slug": "microservices",
     "title": "Microservices",
     "icon": "grid",
@@ -26,6 +19,13 @@
     "icon": "cube",
     "color": "#10b981",
     "description": "Strategic and tactical DDD: bounded contexts, ubiquitous language, aggregates and context mapping."
+  },
+  {
+    "slug": "architect",
+    "title": "Architect",
+    "icon": "compass",
+    "color": "#8b5cf6",
+    "description": "The software architect's diagram dictionary: 110 diagram types — which to draw, when, and what it must show."
   },
   {
     "slug": "ai-driven-development",

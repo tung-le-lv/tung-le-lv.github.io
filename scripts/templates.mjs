@@ -148,14 +148,37 @@ function articleCard(ctx, a, { showCat = false } = {}) {
   </a>`;
 }
 
+// The home page's "Latest articles" list: the first LATEST_STEP rows show, the rest are revealed by "Show more".
+const LATEST_STEP = 7;
+function latestList(articles) {
+  const more = articles.length - LATEST_STEP;
+  return `
+  <ul class="article-list" id="latest-list">${articles.map((a, i) => articleRow(a, i >= LATEST_STEP)).join('')}</ul>${more > 0 ? `
+  <button class="list-more" type="button" data-list="latest-list" data-step="${LATEST_STEP}">Show more articles <span class="list-more-count">${more} more</span></button>` : ''}`;
+}
+
+// One row of the home page's "Latest articles" list.
+function articleRow(a, hidden = false) {
+  return `
+  <li${hidden ? ' hidden' : ''}><a class="article-row" href="${a.url}" style="--c:${a.category.color}">
+    <span class="row-main">
+      <span class="card-cat">${esc(a.category.title)}</span>
+      <span class="row-title">${esc(a.title)}</span>
+      <span class="row-desc">${esc(a.description)}</span>
+    </span>
+    <span class="row-meta">${a.updated ? `<span>${fmt(a.updated)}</span>` : ''}<span>${icon('clock')}${a.readingMinutes} min</span></span>
+  </a></li>`;
+}
+
 export function homeView(ctx) {
   const { site, categories, all, tags } = ctx;
   return `
 <section class="hero">
-  <p class="eyebrow">${esc(site.author)}</p>
   <h1>${esc(site.tagline)}</h1>
-  <p class="lede">${esc(site.description)}</p>
-  <button class="hero-search search-btn" type="button">${icon('search')}<span>Search ${count(all.length, 'article')}…</span><kbd>⌘K</kbd></button>
+</section>
+<section>
+  <h2 class="section-title">Latest articles</h2>
+  ${latestList(all.filter((a) => !a.overview))}
 </section>
 <section>
   <h2 class="section-title">Browse by topic</h2>
@@ -168,10 +191,6 @@ export function homeView(ctx) {
       <span class="card-foot">${c.articles.length ? count(c.articles.length, 'article') : 'Coming soon'}${icon('arrowRight')}</span>
     </a>`).join('')}
   </div>
-</section>
-<section>
-  <h2 class="section-title">Latest articles</h2>
-  <div class="grid articles">${all.filter((a) => !a.overview).slice(0, 6).map((a) => articleCard(ctx, a, { showCat: true })).join('')}</div>
 </section>
 <section>
   <h2 class="section-title">Popular tags</h2>

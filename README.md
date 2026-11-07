@@ -1,4 +1,4 @@
-# Software Architect Wiki
+# Software Architecture Wiki
 
 Live site: https://tung-le-lv.github.io
 

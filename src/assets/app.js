@@ -545,6 +545,20 @@ const openSearch = () => {
 };
 const closeSearch = () => { dlg.hidden = true; document.body.classList.remove('search-open'); };
 document.addEventListener('click', (e) => { if (e.target.closest('.search-btn')) openSearch(); });
+
+// "Show more" under a list: reveal the next `data-step` hidden rows, move focus to the first new one, and remove
+// the button once nothing is left. Delegated, so it keeps working after client-side page swaps.
+document.addEventListener('click', (e) => {
+  const btn = e.target.closest('.list-more');
+  if (!btn) return;
+  const rows = $$('li[hidden]', document.getElementById(btn.dataset.list));
+  const next = rows.slice(0, Number(btn.dataset.step) || 7);
+  next.forEach((li) => (li.hidden = false));
+  $('a', next[0])?.focus({ preventScroll: true });
+  const left = rows.length - next.length;
+  if (left > 0) $('.list-more-count', btn).textContent = `${left} more`;
+  else btn.remove();
+});
 $('.search-backdrop', dlg).addEventListener('click', closeSearch);
 $('.search-close', dlg).addEventListener('click', closeSearch);
 input.addEventListener('input', runSearch);

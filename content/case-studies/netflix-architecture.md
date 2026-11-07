@@ -1,17 +1,14 @@
 ---
 title: Netflix Architecture
-description: A layer-by-layer tour of a Netflix-style cloud architecture — what happens when you press play, how services talk over gRPC, and how synchronous calls, events and replicated data are each used where they fit.
+description: Netflix-style cloud architecture.
 tags: [netflix, grpc, cdn, event-driven, resilience, distributed-systems]
 updated: 2024-08-11
 order: 1
 ---
 
-> [!NOTE] About this article
-> It is based on a set of architecture diagrams (infrastructure, gRPC, system architecture and service interaction). Figures such as deadline budgets and the heartbeat interval are **as drawn** in those diagrams and may be simplified, so read them as illustrations of the design rather than official Netflix numbers.
+## Overall Architecture
 
-## The big picture in one minute
-
-The system splits cleanly in two:
+The system splits in two:
 
 - **Control plane (AWS).** Everything that decides *what* to play: sign-in, browsing, recommendations, search, licensing. It runs in 3+ AWS regions, active-active, across multiple availability zones.
 - **Data plane (Open Connect).** Netflix's own CDN, which delivers essentially **all video bytes**. Video never flows through the AWS services above.
@@ -196,7 +193,7 @@ flowchart LR
 - The trade: staleness of minutes, and memory used in every consumer.
 - The same fix applies to Case B data such as entitlements, when the freshness tolerance allows.
 
-## Getting the video to you
+## Video processing pipeline
 
 Content follows a separate pipeline that never touches the microservices:
 
@@ -214,16 +211,6 @@ flowchart TD
 - **Open Connect appliances (OCAs)** sit at internet exchange points and inside ISP networks, and are filled during off-peak hours from the S3 origin.
 - **Proactive placement:** the Open Connect control plane orchestrates fill, health and content placement, using popularity prediction.
 - **Steering:** when you press play, the CDN steering service authorises the request and points your device at the nearest healthy OCA.
-
-## Takeaways for architects
-
-1. **Separate the control plane from the data plane.** Decisions run on flexible cloud services. The heavy bytes ride a purpose-built network.
-2. **Authenticate once, at the edge.** Mint a token-agnostic identity and propagate it on every internal call.
-3. **Compose per device.** A federated GraphQL gateway (a BFF per device family) keeps clients simple and services generic.
-4. **Give every synchronous call a deadline, a breaker and a fallback.** Propagate the remaining budget so slow paths fail fast.
-5. **Choose the interaction style per dependency.** Delegation to a technical service: gRPC. Side effects: events. Hot, stable reference data: replicate it.
-6. **Keep authority and coupling apart.** They are different questions with different answers.
-7. **Invest in observability from the start.** Metrics, tracing and real-time analysis are part of the platform, not an afterthought.
 
 ## References
 
