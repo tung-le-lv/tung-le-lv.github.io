@@ -1,6 +1,6 @@
 ---
 title: Aggregate Pattern
-description: "How an Aggregate draws a consistency boundary around Entities and Value Objects: the root, global and local identity, the four rules of thumb and when to break them, a Java implementation, and how Aggregates work with domain events, the outbox, event sourcing and CQRS."
+description: "How an Aggregate draws a consistency boundary around Entities and Value Objects."
 tags: [ddd, aggregate, tactical-design, consistency-boundary, eventual-consistency, domain-events, java]
 updated: 2026-11-07
 section: Tactical Design
@@ -428,21 +428,6 @@ flowchart LR
     P --> V[("Sprint board view<br>denormalised")]
     C -->|query| V
 ```
-
-## Review checklist
-
-| Check | Ask | Warning sign |
-| --- | --- | --- |
-| **Boundary** | Which business rule requires these objects to agree at commit? | Nobody can name the rule. |
-| **Root** | Is there a single entry point? | Callers hold a reference to an internal part. |
-| **Identity** | Is global identity only on the root? | Clients look up an internal Entity by its id. |
-| **Size** | Is this the root plus only what must stay consistent? | Unbounded collections, or frequent version conflicts. |
-| **References** | Are other Aggregates referenced by identity? | A field whose type is another Aggregate's root. |
-| **Transaction** | Does each transaction change one Aggregate? | Two `save()` calls on different Aggregates in one use case. |
-| **Eventual consistency** | Are cross-Aggregate updates driven by events? | A synchronous chain of updates, with no agreed delay. |
-| **Encapsulation** | Do clients tell the root what to do? | Public setters, or `getTasks().get(id).set...`. |
-| **Repositories** | Does only the root have one? | A `TaskRepository` or `LineItemRepository`. |
-| **Concurrency** | Does one version protect each rule that spans parts? | Child versions only, with an invariant across children. |
 
 ## References
 
