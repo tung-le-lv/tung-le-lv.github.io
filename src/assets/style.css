@@ -139,7 +139,8 @@ kbd { font: 500 11px var(--mono); padding: 2px 6px; border: 1px solid var(--bord
 .eyebrow { margin: 0 0 12px; font: 600 13px var(--sans); letter-spacing: .1em; text-transform: uppercase; color: var(--brand); }
 
 /* Hero */
-.hero { padding: 36px 0 44px; }
+.hero { padding: 36px 0 0; }
+.hero + section > .section-title:first-child { margin-top: 32px; }
 .hero h1 { margin: 0; max-width: 18ch; font-size: clamp(2.2rem, 5.4vw, 3.9rem); line-height: 1.05; letter-spacing: -.035em; font-weight: 700; background: linear-gradient(120deg, var(--text) 30%, var(--brand-2)); -webkit-background-clip: text; background-clip: text; color: transparent; }
 .hero-search { margin-top: 28px; min-width: min(460px, 100%); padding: 13px 14px 13px 16px; font-size: 15px; box-shadow: var(--shadow); }
 .section-title { margin: 44px 0 16px; font-size: 13px; font-weight: 650; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
