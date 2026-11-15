@@ -39,7 +39,7 @@ Model a concept as an Entity when the business has to tell one instance apart fr
 The first modelling question about any concept is which of the two it is:
 
 - An **Entity** is defined by **identity**: *which one* is it? It changes over time, so it needs its identity tracked.
-- A **Value Object** is defined by its **attributes**: *what, how much, what kind*? It is immutable, has no identity, and two with the same attributes are equal.
+- A **[Value Object](/domain-driven-design/value-object/)** is defined by its **attributes**: *what, how much, what kind*? It is immutable, has no identity, and two with the same attributes are equal.
 
 Khononov's advice is to lean towards Value Objects. Use an Entity only when the concept's state changes over time and the business must follow individual instances through those changes. Value Objects are smaller, easier to test, and can't be put into an invalid state by a later change.
 
