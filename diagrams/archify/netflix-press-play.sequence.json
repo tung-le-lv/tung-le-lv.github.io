@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "diagram_type": "sequence",
+  "meta": { "title": "Opening the app and pressing play", "locale": "en", "output": "diagrams/archify/netflix-press-play.html", "quality_profile": "showcase" },
+  "participants": [
+    { "id": "device", "type": "frontend", "label": "Device", "sublabel": "Netflix app" },
+    { "id": "edge", "type": "security", "label": "Edge", "sublabel": "Zuul" },
+    { "id": "gateway", "type": "backend", "label": "Gateway", "sublabel": "GraphQL DGS" },
+    { "id": "services", "type": "backend", "label": "Services", "sublabel": "gRPC" },
+    { "id": "oca", "type": "cloud", "label": "Open Connect", "sublabel": "nearest OCA" },
+    { "id": "kafka", "type": "messagebus", "label": "Kafka", "sublabel": "Keystone" }
+  ],
+  "segments": [
+    { "from": 145, "to": 345, "label": "Browse" },
+    { "from": 360, "to": 480, "label": "Play" }
+  ],
+  "messages": [
+    { "id": "open-app", "from": "device", "to": "edge", "y": 160, "label": "open app", "variant": "emphasis" },
+    { "id": "route", "from": "edge", "to": "gateway", "y": 195, "label": "route", "variant": "emphasis", "note": "authN + authZ done at the edge" },
+    { "id": "fan-out", "from": "gateway", "to": "services", "y": 250, "label": "gRPC fan-out", "variant": "emphasis", "note": "deadline ~800 ms" },
+    { "id": "results", "from": "services", "to": "gateway", "y": 300, "label": "results", "variant": "return" },
+    { "id": "home", "from": "gateway", "to": "device", "y": 330, "label": "home page", "variant": "return" },
+    { "id": "play", "from": "device", "to": "services", "y": 375, "label": "press Play", "variant": "emphasis" },
+    { "id": "license", "from": "services", "to": "device", "y": 405, "label": "license + OCA URLs", "variant": "return" },
+    { "id": "stream", "from": "device", "to": "oca", "y": 435, "label": "stream video", "variant": "emphasis" },
+    { "id": "events", "from": "services", "to": "kafka", "y": 465, "label": "play events", "variant": "dashed" }
+  ]
+}

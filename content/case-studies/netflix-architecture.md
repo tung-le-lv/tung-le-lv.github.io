@@ -13,27 +13,10 @@ The system splits in two:
 - **Control plane (AWS).** Everything that decides *what* to play: sign-in, browsing, recommendations, search, licensing. It runs in 3+ AWS regions, active-active, across multiple availability zones.
 - **Data plane (Open Connect).** Netflix's own CDN, which delivers essentially **all video bytes**. Video never flows through the AWS services above.
 
-```mermaid
-flowchart TD
-    C["Client devices<br>TV, mobile, web, consoles"] --> E["Edge and security<br>Route 53, WAF, ELB, Zuul"]
-    E --> A["API composition<br>GraphQL federation (DGS)"]
-    A --> M["Domain microservices<br>gRPC + protobuf"]
-    M --> D[("Data tier<br>EVCache, Cassandra, ...")]
-    M -.->|async events| K{{"Kafka (Keystone)"}}
-    S["Studio masters"] --> ENC["Encoding + packaging"] --> O[("S3 origin")]
-    O -.->|off-peak fill| OC["Open Connect CDN<br>OCAs in IXPs and ISPs"]
-    OC ==>|video bytes| C
-    classDef ctrl fill:#dbeafe,stroke:#3b82f6,color:#0f172a
-    classDef data fill:#dcfce7,stroke:#22c55e,color:#0f172a
-    class E,A,M,D,K ctrl
-    class S,ENC,O,OC data
+```archify
+netflix-architecture
+Netflix's architecture in two planes. In the AWS control plane, a client request goes through Route 53, Shield, WAF and the load balancer to the Zuul gateway, which checks identity, routes to GraphQL federation, and fans out over gRPC to domain services that read EVCache, then Cassandra, publish events to Kafka and send telemetry to observability. In the data plane, studio masters are encoded and stored in the S3 origin, which fills the Open Connect CDN off-peak, and Open Connect streams the video bytes to the client. Numbers 1 to 10 mark the request flow.
 ```
-
-*Blue: control plane. Green: content and data plane.*
-
-![Netflix cloud architecture: every layer a typical client request touches, with the numbered request flow 1 to 10.](/assets/img/netflix-architecture-infra.png)
-
-*The full infrastructure diagram.*
 
 ## What happens when you press play
 
@@ -50,23 +33,9 @@ flowchart TD
 | 9 | Play and impression events are published to Kafka, asynchronously. History, training and analytics consume them. Nobody waits. | Kafka |
 | 10 | Metrics, traces and logs flow continuously to the observability stack. | Atlas, Edgar, Mantis |
 
-```mermaid
-%%{init: {"sequence": {"width": 105, "actorMargin": 14}}}%%
-sequenceDiagram
-    actor D as Device
-    participant Z as Edge
-    participant G as Gateway
-    participant S as Services
-    participant K as Kafka
-    D->>Z: open app
-    Z->>Z: authN + authZ
-    Z->>G: route
-    G->>S: gRPC fan-out
-    S-->>G: results
-    G-->>D: home page
-    D->>S: press Play
-    S-->>D: license + CDN URLs
-    S-)K: play events
+```archify
+netflix-press-play
+Sequence of opening the app and pressing play. The device opens the app at the edge, which authenticates and authorises it and routes to the gateway. The gateway fans out over gRPC to services with a deadline of about 800 ms and returns the home page. On Play, services return a license and Open Connect URLs, the device streams video from the nearest Open Connect appliance, and services publish play events to Kafka.
 ```
 
 ## The layers
@@ -111,16 +80,9 @@ Inside the control plane, services call each other over **gRPC** (HTTP/2 + proto
 
 **Deadline propagation** is the key idea for keeping tail latency under control. The gateway starts with a budget and each hop passes on only what is left:
 
-```mermaid
-flowchart LR
-    G["Gateway<br>800 ms"] --> P["Playback"]
-    G --> R["Recs"]
-    G --> S["Search"]
-    P -->|600| DRM["DRM"]
-    P -->|600| ST["Steering"]
-    R -->|550| H1["History"]
-    R -->|550| ML["ML"]
-    S --> CAT["Catalog"] -->|500| H2["History"]
+```archify
+netflix-grpc-deadline
+The gateway starts with an 800 ms budget and calls Playback, Recs and Search. Playback calls DRM and Steering with 600 ms left, Recs calls History and ML with 550 ms left, and Search calls Catalog, which calls History with 500 ms left.
 ```
 
 Numbers on the arrows are the milliseconds left in the budget. A service deep in the chain knows it must answer quickly, or not at all, instead of working on a response nobody is waiting for.
@@ -141,10 +103,9 @@ A synchronous call **always** adds coupling. It touches authority only when *bot
 
 ### Pattern 1: synchronous gRPC, two different cases
 
-```mermaid
-flowchart LR
-    R["Recommendations<br>business authority"] -->|"gRPC: delegate"| ML["ML inference<br>technical capability"]
-    PL["Playback licensing<br>business authority"] -->|"gRPC: can this plan stream 4K?"| SUB["Subscription / entitlements<br>business authority"]
+```archify
+netflix-pattern-sync
+Two synchronous gRPC calls. In case A, Recommendations, a business authority, delegates to ML inference, a technical capability. In case B, Playback licensing asks Entitlements, another business authority, whether the plan can stream 4K.
 ```
 
 | Case | Example | Verdict |
@@ -161,13 +122,9 @@ Either way, every synchronous edge wears **armour**: a deadline, a circuit break
 
 One service is the only writer of its data. It publishes **facts, not commands**, and others build their own views:
 
-```mermaid
-flowchart LR
-    PB["Playback service<br>only writer"] -->|owns all writes| CA[("own Cassandra")]
-    PB -.->|"publish fact (async)"| KF{{"Kafka<br>playback events"}}
-    KF -.-> VH["Viewing history<br>updates own store"]
-    KF -.-> TR["Recs training pipeline"]
-    KF -.-> AN["Analytics / experiments"]
+```archify
+netflix-pattern-events
+The playback service is the only writer of its own Cassandra store. It publishes facts asynchronously to a Kafka topic, which viewing history, the recommendations training pipeline and analytics each consume.
 ```
 
 - **Authority:** strict. **Coupling at run time:** none.
@@ -180,12 +137,9 @@ flowchart LR
 
 Catalog metadata is read constantly by many services and changes slowly. Instead of calling the metadata service, each consumer keeps a copy in memory using **Hollow**:
 
-```mermaid
-flowchart LR
-    MD["Video metadata service<br>sole writer"] -->|publish| HO[("Hollow snapshot + deltas<br>on S3")]
-    HO -.->|refresh, minutes| PL["Playback<br>in-memory copy"]
-    HO -.-> SE["Search<br>in-memory copy"]
-    HO -.-> RE["Recommendations<br>in-memory copy"]
+```archify
+netflix-pattern-replication
+The video metadata service, the sole writer, publishes a Hollow snapshot and deltas to S3. Playback, Search and Recommendations each refresh an in-memory copy from it every few minutes.
 ```
 
 - **Authority:** strict. **Coupling:** eliminated, with no runtime call on the hot path.
@@ -197,14 +151,9 @@ flowchart LR
 
 Content follows a separate pipeline that never touches the microservices:
 
-```mermaid
-flowchart TD
-    A["Studio masters<br>raw video sources"] --> B["Encoding platform<br>per-title, shot-based ladders, VMAF-tuned<br>AV1 / HEVC / H.264"]
-    B --> C["Packaging + DRM<br>segments, manifests, encryption"]
-    C --> D[("S3 origin<br>encoded asset library")]
-    D -.->|off-peak fill| E["OCAs at IXPs<br>full catalogue tiers"]
-    E -.->|tiered fill| F["OCAs embedded in ISPs<br>closest to users"]
-    F ==>|"video bytes, adaptive bitrate over HTTPS"| G([Your device])
+```archify
+netflix-video-pipeline
+Studio masters go to the encoding platform, which builds per-title ladders in AV1, HEVC and H.264. Packaging splits and encrypts them with DRM and stores them in the S3 origin. The origin fills Open Connect appliances at internet exchanges off-peak, those fill the appliances inside ISPs, and the nearest one streams video to your device over HTTPS with adaptive bitrate.
 ```
 
 - **Encoding** produces hundreds of versions of each title, so the player can adapt to network conditions.

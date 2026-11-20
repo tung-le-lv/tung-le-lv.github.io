@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": { "title": "Strict authority plus events", "locale": "en", "output": "diagrams/archify/netflix-pattern-events.html", "quality_profile": "showcase" },
+  "components": [
+    { "id": "playback", "type": "backend", "label": "Playback", "sublabel": "only writer", "pos": [40, 120], "size": [150, 60] },
+    { "id": "store", "type": "database", "label": "Cassandra", "sublabel": "its own store", "pos": [40, 260], "size": [150, 60] },
+    { "id": "kafka", "type": "messagebus", "label": "Kafka", "sublabel": "playback events", "pos": [310, 120], "size": [150, 60] },
+    { "id": "history", "type": "backend", "label": "Viewing history", "sublabel": "own store", "pos": [600, 40], "size": [160, 60] },
+    { "id": "training", "type": "backend", "label": "Recs training", "sublabel": "pipeline", "pos": [600, 120], "size": [160, 60] },
+    { "id": "analytics", "type": "backend", "label": "Analytics", "sublabel": "experiments", "pos": [600, 200], "size": [160, 60] }
+  ],
+  "connections": [
+    { "id": "writes", "from": "playback", "to": "store", "label": "all writes" },
+    { "id": "publish", "from": "playback", "to": "kafka", "label": "publish fact", "variant": "dashed" },
+    { "id": "to-history", "from": "kafka", "to": "history", "label": "consume", "variant": "dashed" },
+    { "id": "to-training", "from": "kafka", "to": "training", "label": "consume", "variant": "dashed" },
+    { "id": "to-analytics", "from": "kafka", "to": "analytics", "label": "consume", "variant": "dashed" }
+  ]
+}

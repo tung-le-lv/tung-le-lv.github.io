@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": { "title": "Netflix cloud architecture", "locale": "en", "output": "diagrams/archify/netflix-architecture.html", "quality_profile": "showcase" },
+  "components": [
+    { "id": "client", "type": "frontend", "label": "Client devices", "sublabel": "TV, mobile, web", "pos": [40, 40], "size": [140, 64], "tag": "ABR player" },
+    { "id": "r53", "type": "cloud", "label": "Route 53", "sublabel": "geo / latency DNS", "pos": [240, 40], "size": [140, 64] },
+    { "id": "edge", "type": "security", "label": "Shield, WAF, ELB", "sublabel": "filter + balance", "pos": [440, 40], "size": [150, 64] },
+    { "id": "zuul", "type": "backend", "label": "Zuul", "sublabel": "API gateway", "pos": [640, 40], "size": [150, 64], "tag": "TLS, routing" },
+    { "id": "identity", "type": "security", "label": "Identity", "sublabel": "Passport, entitlements", "pos": [870, 40], "size": [160, 64] },
+    { "id": "dgs", "type": "backend", "label": "GraphQL federation", "sublabel": "DGS, one per device", "pos": [640, 200], "size": [150, 64] },
+    { "id": "svc", "type": "backend", "label": "Domain services", "sublabel": "playback, recs, search", "pos": [640, 360], "size": [150, 64], "tag": "gRPC + protobuf" },
+    { "id": "obs", "type": "backend", "label": "Observability", "sublabel": "Atlas, Edgar, Mantis", "pos": [380, 360], "size": [150, 64] },
+    { "id": "evcache", "type": "database", "label": "EVCache", "sublabel": "per-AZ cache", "pos": [870, 360], "size": [150, 64] },
+    { "id": "cassandra", "type": "database", "label": "Cassandra", "sublabel": "source of truth", "pos": [1080, 360], "size": [140, 64] },
+    { "id": "kafka", "type": "messagebus", "label": "Kafka", "sublabel": "Keystone", "pos": [640, 520], "size": [150, 64] },
+    { "id": "consumers", "type": "backend", "label": "Consumers", "sublabel": "history, training, analytics", "pos": [870, 520], "size": [170, 64] },
+    { "id": "oca", "type": "cloud", "label": "Open Connect", "sublabel": "OCAs in IXPs + ISPs", "pos": [40, 200], "size": [140, 64], "tag": "all video bytes" },
+    { "id": "s3", "type": "database", "label": "S3 origin", "sublabel": "encoded library", "pos": [40, 360], "size": [140, 64] },
+    { "id": "encode", "type": "backend", "label": "Encoding", "sublabel": "packaging + DRM", "pos": [40, 520], "size": [140, 64] },
+    { "id": "studio", "type": "external", "label": "Studio masters", "sublabel": "raw video", "pos": [40, 680], "size": [140, 64] }
+  ],
+  "boundaries": [
+    { "kind": "region", "label": "Control plane: AWS, 3+ regions, active-active", "wraps": ["r53", "edge", "zuul", "identity", "dgs", "svc", "obs", "evcache", "cassandra", "kafka", "consumers"] },
+    { "kind": "region", "label": "Data plane", "wraps": ["oca", "s3", "encode", "studio"] }
+  ],
+  "connections": [
+    { "id": "dns", "from": "client", "to": "r53", "label": "1 DNS", "variant": "emphasis" },
+    { "id": "tls", "from": "r53", "to": "edge", "label": "2 TLS", "variant": "emphasis" },
+    { "id": "to-zuul", "from": "edge", "to": "zuul", "variant": "emphasis" },
+    { "id": "auth", "from": "zuul", "to": "identity", "label": "2-3 auth", "variant": "security" },
+    { "id": "route", "from": "zuul", "to": "dgs", "label": "4 route", "variant": "emphasis" },
+    { "id": "fanout", "from": "dgs", "to": "svc", "label": "5 gRPC, ~800 ms", "variant": "emphasis" },
+    { "id": "read", "from": "svc", "to": "evcache", "label": "6 read" },
+    { "id": "miss", "from": "evcache", "to": "cassandra", "label": "miss" },
+    { "id": "telemetry", "from": "svc", "to": "obs", "label": "10 telemetry", "variant": "dashed" },
+    { "id": "events", "from": "svc", "to": "kafka", "label": "9 async events", "variant": "dashed" },
+    { "id": "consume", "from": "kafka", "to": "consumers", "label": "consume", "variant": "dashed" },
+    { "id": "stream", "from": "oca", "to": "client", "label": "8 video bytes", "variant": "emphasis" },
+    { "id": "fill", "from": "s3", "to": "oca", "label": "off-peak fill", "variant": "dashed" },
+    { "id": "publish", "from": "encode", "to": "s3", "label": "publish" },
+    { "id": "ingest", "from": "studio", "to": "encode", "label": "masters" }
+  ],
+  "cards": [
+    { "dot": "cyan", "title": "Opening the app and pressing play", "items": ["1-2 DNS picks a healthy region; TLS passes DDoS and WAF filtering to Zuul", "2-3 Zuul authenticates the device and checks plan, profile and region rights", "4-5 DGS composes the view by calling domain services over gRPC with a time budget", "6-7 Reads go to EVCache first, then Cassandra; the home page returns", "8 On Play, the device gets a license and OCA URLs, then streams from the nearest OCA", "9-10 Play events and telemetry flow asynchronously; nobody waits"] },
+    { "dot": "emerald", "title": "Data tier", "items": ["EVCache first, Cassandra as the multi-region source of truth", "MySQL / CockroachDB for billing, Elasticsearch for search", "Hollow keeps catalog metadata in each consumer's memory"] },
+    { "dot": "violet", "title": "Platform", "items": ["Eureka discovery, client-side load balancing, circuit breakers", "Titus containers, Spinnaker red/black deploys, chaos tools"] }
+  ]
+}

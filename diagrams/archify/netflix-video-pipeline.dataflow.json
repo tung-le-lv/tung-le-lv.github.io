@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "diagram_type": "dataflow",
+  "meta": { "title": "Video processing pipeline", "locale": "en", "output": "diagrams/archify/netflix-video-pipeline.html", "quality_profile": "showcase" },
+  "stages": [ { "label": "Source" }, { "label": "Encode" }, { "label": "Origin" }, { "label": "Open Connect" }, { "label": "Device" } ],
+  "nodes": [
+    { "id": "masters", "type": "external", "label": "Studio masters", "sublabel": "raw video", "stage": 0, "row": 0 },
+    { "id": "encoding", "type": "backend", "label": "Encoding", "sublabel": "per-title ladders", "stage": 1, "row": 0, "tag": "AV1 / HEVC / H.264" },
+    { "id": "packaging", "type": "security", "label": "Packaging", "sublabel": "segments + DRM", "stage": 1, "row": 1 },
+    { "id": "s3", "type": "database", "label": "S3 origin", "sublabel": "encoded library", "stage": 2, "row": 1 },
+    { "id": "ixp", "type": "cloud", "label": "OCAs at IXPs", "sublabel": "full catalogue", "stage": 3, "row": 1 },
+    { "id": "isp", "type": "cloud", "label": "OCAs in ISPs", "sublabel": "closest to users", "stage": 3, "row": 2 },
+    { "id": "device", "type": "frontend", "label": "Your device", "sublabel": "adaptive bitrate", "stage": 4, "row": 2 }
+  ],
+  "flows": [
+    { "id": "raw", "from": "masters", "to": "encoding", "label": "raw video", "variant": "emphasis" },
+    { "id": "encoded", "from": "encoding", "to": "packaging", "label": "encodes", "variant": "emphasis" },
+    { "id": "packaged", "from": "packaging", "to": "s3", "label": "encrypted", "variant": "emphasis" },
+    { "id": "fill", "from": "s3", "to": "ixp", "label": "off-peak fill", "variant": "dashed" },
+    { "id": "tiered", "from": "ixp", "to": "isp", "label": "tiered fill", "variant": "dashed" },
+    { "id": "bytes", "from": "isp", "to": "device", "label": "video, HTTPS", "variant": "emphasis" }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": { "title": "Reference data replicated, not queried", "locale": "en", "output": "diagrams/archify/netflix-pattern-replication.html", "quality_profile": "showcase" },
+  "components": [
+    { "id": "metadata", "type": "backend", "label": "Video metadata", "sublabel": "sole writer", "pos": [40, 120], "size": [150, 60] },
+    { "id": "hollow", "type": "database", "label": "Hollow on S3", "sublabel": "snapshot + deltas", "pos": [300, 120], "size": [150, 60] },
+    { "id": "playback", "type": "backend", "label": "Playback", "sublabel": "in-memory copy", "pos": [610, 40], "size": [160, 60] },
+    { "id": "search", "type": "backend", "label": "Search", "sublabel": "in-memory copy", "pos": [610, 120], "size": [160, 60] },
+    { "id": "recs", "type": "backend", "label": "Recommendations", "sublabel": "in-memory copy", "pos": [610, 200], "size": [160, 60] }
+  ],
+  "connections": [
+    { "id": "publish", "from": "metadata", "to": "hollow", "label": "publish" },
+    { "id": "to-playback", "from": "hollow", "to": "playback", "label": "refresh, minutes", "variant": "dashed" },
+    { "id": "to-search", "from": "hollow", "to": "search", "label": "refresh", "variant": "dashed" },
+    { "id": "to-recs", "from": "hollow", "to": "recs", "label": "refresh", "variant": "dashed" }
+  ]
+}

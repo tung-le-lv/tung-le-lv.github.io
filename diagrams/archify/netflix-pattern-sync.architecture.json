@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": { "title": "Synchronous gRPC: two different cases", "locale": "en", "output": "diagrams/archify/netflix-pattern-sync.html", "quality_profile": "showcase" },
+  "components": [
+    { "id": "recs", "type": "backend", "label": "Recommendations", "sublabel": "business authority", "pos": [40, 40], "size": [170, 64] },
+    { "id": "ml", "type": "backend", "label": "ML inference", "sublabel": "technical capability", "pos": [380, 40], "size": [170, 64], "tag": "case A" },
+    { "id": "licensing", "type": "backend", "label": "Playback licensing", "sublabel": "business authority", "pos": [40, 180], "size": [170, 64] },
+    { "id": "entitlements", "type": "backend", "label": "Entitlements", "sublabel": "business authority", "pos": [380, 180], "size": [170, 64], "tag": "case B" }
+  ],
+  "connections": [
+    { "id": "delegate", "from": "recs", "to": "ml", "label": "gRPC: delegate", "variant": "emphasis" },
+    { "id": "ask", "from": "licensing", "to": "entitlements", "label": "gRPC: 4K allowed?", "variant": "emphasis" }
+  ]
+}

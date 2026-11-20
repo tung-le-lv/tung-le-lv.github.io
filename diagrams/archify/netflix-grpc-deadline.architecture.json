@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": { "title": "Deadline propagation across gRPC hops", "locale": "en", "output": "diagrams/archify/netflix-grpc-deadline.html", "quality_profile": "showcase" },
+  "components": [
+    { "id": "gw", "type": "backend", "label": "Gateway", "sublabel": "budget 800 ms", "pos": [40, 240], "size": [140, 60] },
+    { "id": "playback", "type": "backend", "label": "Playback", "pos": [300, 80], "size": [140, 60] },
+    { "id": "recs", "type": "backend", "label": "Recs", "pos": [300, 240], "size": [140, 60] },
+    { "id": "search", "type": "backend", "label": "Search", "pos": [300, 360], "size": [140, 60] },
+    { "id": "drm", "type": "backend", "label": "DRM", "pos": [580, 40], "size": [140, 60] },
+    { "id": "steering", "type": "backend", "label": "Steering", "pos": [580, 120], "size": [140, 60] },
+    { "id": "history1", "type": "backend", "label": "History", "pos": [580, 200], "size": [140, 60] },
+    { "id": "ml", "type": "backend", "label": "ML", "pos": [580, 280], "size": [140, 60] },
+    { "id": "catalog", "type": "backend", "label": "Catalog", "pos": [580, 360], "size": [140, 60] },
+    { "id": "history2", "type": "backend", "label": "History", "pos": [840, 360], "size": [140, 60] }
+  ],
+  "connections": [
+    { "id": "gw-playback", "from": "gw", "to": "playback", "variant": "emphasis" },
+    { "id": "gw-recs", "from": "gw", "to": "recs", "variant": "emphasis" },
+    { "id": "gw-search", "from": "gw", "to": "search", "variant": "emphasis" },
+    { "id": "playback-drm", "from": "playback", "to": "drm", "label": "600 ms" },
+    { "id": "playback-steering", "from": "playback", "to": "steering", "label": "600 ms" },
+    { "id": "recs-history", "from": "recs", "to": "history1", "label": "550 ms" },
+    { "id": "recs-ml", "from": "recs", "to": "ml", "label": "550 ms" },
+    { "id": "search-catalog", "from": "search", "to": "catalog" },
+    { "id": "catalog-history", "from": "catalog", "to": "history2", "label": "500 ms" }
+  ]
+}
