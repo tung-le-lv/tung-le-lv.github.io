@@ -20,7 +20,7 @@ Static site for GitHub Pages. No backend. `npm run build` turns `content/**/*.md
      <one or two sentences describing what the diagram shows>
      ```
      ````
-     The build copies `diagrams/archify/<name>.html` to `dist/assets/archify/` and shows it in an iframe with the viewer's toolbar and cards hidden and the theme following the site's. Motion starts Still (Archify's default); readers switch to Live in the full viewer, which a "Zoom" link below the diagram opens in a popup, and Archify remembers that choice. Archify's own `?embed=1` mode never animates, so don't use it.
+     The build copies `diagrams/archify/<name>.html` to `dist/assets/archify/` and shows it in an iframe with the viewer's toolbar and cards hidden and the theme following the site's. Motion starts Still (Archify's default); readers switch to Live in the full viewer, which the magnifier (zoom) button below the diagram opens in a popup, and Archify remembers that choice. Archify's own `?embed=1` mode never animates, so don't use it.
    - **Commit** the `.json` source and the `.html`; the run receipts (`*.finalize*.json`, `*.browser-check.json`, `*.delivery.json`) are git-ignored because they hold local paths.
    - **Static PNG (optional):** only when a still image is needed, `npm run archify:png -- <name>` uses the viewer's own PNG export in the light theme and writes `src/assets/img/<name>.png`.
    - **Labels must not be crossed by lines:** keep edge labels short; if a line touches a label, shorten the label or change the layout and re-run.

@@ -281,7 +281,11 @@ kbd { font: 500 11px var(--mono); padding: 2px 6px; border: 1px solid var(--bord
 .diagram svg { max-width: 100%; height: auto; cursor: zoom-in; }
 .diagram.archify { padding: 0; overflow: hidden; }
 .diagram.archify iframe { display: block; width: 100%; height: 520px; border: 0; }
-.diagram.archify figcaption { padding: 8px 14px; border-top: 1px solid var(--border); font-size: 13px; text-align: right; }
+.diagram.archify figcaption { display: flex; justify-content: flex-end; padding: 4px 8px; border-top: 1px solid var(--border); }
+.prose a.ax-zoom { text-decoration: none; }
+.ax-zoom { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 9px; color: var(--text-2); transition: background .2s, color .2s; }
+.ax-zoom:hover { background: var(--surface-2); color: var(--text); }
+.ax-zoom .icon { width: 20px; height: 20px; cursor: pointer; } /* not the zoom-in cursor of .diagram svg */
 
 /* Archify popup: the full interactive viewer over the page */
 #archify-pop[hidden] { display: none; }

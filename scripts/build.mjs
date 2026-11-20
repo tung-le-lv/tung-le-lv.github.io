@@ -53,7 +53,7 @@ function renderMarkdown(md) {
           archify.add(name);
           const desc = rest.join(' ').replace(/\s+/g, ' ').trim() || name;
           return `<figure class="diagram archify"><iframe src="/assets/archify/${name}.embed.html?theme=light" data-archify="${name}" title="${esc(desc)}" loading="lazy"></iframe>`
-            + `<figcaption><a href="/assets/archify/${name}.html" target="_blank" rel="noopener">Zoom</a></figcaption></figure>\n`;
+            + `<figcaption><a href="/assets/archify/${name}.html" target="_blank" rel="noopener" class="ax-zoom" aria-label="Zoom diagram" title="Zoom">${icon('zoom')}</a></figcaption></figure>\n`;
         }
         if (language === 'mermaid') {
           hasMermaid = true;
