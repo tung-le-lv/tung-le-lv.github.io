@@ -7,11 +7,6 @@ section: Tactical Design
 order: 0
 ---
 
-> [!TIP] The short version
-> An **Entity** is a domain object defined by **who it is**, not by what its attributes currently say. Its attributes can all change and it stays the same object, because its identity doesn't change.
->
-> Give it a stable identity as early as possible, compare it by that identity only, and change its state through methods named in the Ubiquitous Language, not through public setters. Model everything else as a Value Object.
-
 ## Problem context
 
 Most enterprise codebases have classes called `Customer`, `Order` or `Product` that are really database rows with getters and setters. The rules that decide when a status may change, or which fields must move together, live in service classes around them. This is the **Anemic Domain Model**: you pay for an object model and get none of its protection, because any caller can put an object into a state the business would never allow.

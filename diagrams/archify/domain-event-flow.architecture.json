@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "How a Domain Event travels",
+    "locale": "en",
+    "output": "diagrams/archify/domain-event-flow.html",
+    "quality_profile": "showcase"
+  },
+  "components": [
+    { "id": "owner", "type": "external", "label": "Product owner", "sublabel": "UI or API client", "pos": [40, 40], "size": [130, 60] },
+    { "id": "app", "type": "backend", "label": "Application Service", "sublabel": "one use case", "pos": [305, 40], "size": [150, 60] },
+    { "id": "item", "type": "backend", "label": "BacklogItem", "sublabel": "checks invariants", "pos": [585, 40], "size": [150, 64], "tag": "Aggregate Root" },
+    { "id": "db", "type": "database", "label": "Database", "sublabel": "state + stored event", "pos": [585, 220], "size": [150, 64] },
+    { "id": "forwarder", "type": "backend", "label": "Event forwarder", "sublabel": "polls or tails the log", "pos": [865, 220], "size": [150, 60] },
+    { "id": "broker", "type": "messagebus", "label": "Message broker", "sublabel": "at-least-once", "pos": [865, 400], "size": [150, 60] },
+    { "id": "sprint", "type": "backend", "label": "Sprint", "sublabel": "second Aggregate", "pos": [585, 400], "size": [150, 60], "tag": "own transaction" },
+    { "id": "view", "type": "database", "label": "Read model", "sublabel": "query-side projection", "pos": [865, 570], "size": [150, 60] },
+    { "id": "other", "type": "external", "label": "Other context", "sublabel": "e.g. Reporting", "pos": [1100, 400], "size": [140, 60] }
+  ],
+  "boundaries": [
+    { "kind": "region", "label": "Project management context", "wraps": ["app", "item", "db", "forwarder", "broker", "sprint", "view"] }
+  ],
+  "connections": [
+    { "id": "send-command", "from": "owner", "to": "app", "label": "CommitBacklogItem", "variant": "emphasis" },
+    { "id": "call-aggregate", "from": "app", "to": "item", "label": "commitTo(sprint)", "variant": "emphasis" },
+    { "id": "save-together", "from": "item", "to": "db", "label": "one transaction", "variant": "emphasis" },
+    { "id": "read-unpublished", "from": "db", "to": "forwarder", "label": "unpublished", "variant": "dashed" },
+    { "id": "publish", "from": "forwarder", "to": "broker", "label": "publish", "variant": "dashed" },
+    { "id": "to-sprint", "from": "broker", "to": "sprint", "label": "update Sprint", "variant": "dashed" },
+    { "id": "to-view", "from": "broker", "to": "view", "label": "project", "variant": "dashed" },
+    { "id": "to-other", "from": "broker", "to": "other", "label": "via ACL", "variant": "dashed" }
+  ],
+  "cards": [
+    { "dot": "emerald", "title": "Inside one transaction", "items": ["The Aggregate changes its state and records BacklogItemCommitted", "State and event are saved together, so neither can be lost alone"] },
+    { "dot": "amber", "title": "After the commit", "items": ["A forwarder reads stored events and publishes them", "Delivery is at-least-once, so duplicates can arrive"] },
+    { "dot": "violet", "title": "Subscribers", "items": ["Another Aggregate updates in its own transaction", "Read models and other contexts react independently", "Every handler must be idempotent"] }
+  ]
+}

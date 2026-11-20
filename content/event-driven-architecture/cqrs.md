@@ -6,11 +6,6 @@ updated: 2026-09-21
 order: 4
 ---
 
-> [!TIP] The short version
-> **CQRS** (Command Query Responsibility Segregation) means using **a different model to update information than the model you use to read it**. Commands change state. Queries return data and never change anything.
->
-> It is a powerful tool and an easy one to misuse. **Most systems do not need it.** Reach for it only for a specific part of a system (one Bounded Context) where reads and writes really pull in different directions.
-
 ## What CQRS is
 
 The mainstream way to work with an information system is **CRUD**: one record structure that you create, read, update and delete. In the simplest case, all interaction is about storing and retrieving those records.

@@ -12,6 +12,7 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const CONTENT = path.join(ROOT, 'content');
 const SRC = path.join(ROOT, 'src');
 const DIST = path.join(ROOT, 'dist');
+const ARCHIFY = path.join(ROOT, 'diagrams', 'archify');
 
 export const slugify = (s) =>
   s.toLowerCase().normalize('NFKD').replace(/[̀-ͯ]/g, '')
@@ -20,6 +21,7 @@ export const slugify = (s) =>
 const stripTags = (h) => h.replace(/<[^>]+>/g, '').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'");
 
 // ---------- Markdown ----------
+const archify = new Set(); // Archify diagrams referenced by ```archify blocks; copied to dist/assets/archify/
 const CALLOUTS = new Set(['note', 'info', 'tip', 'warning', 'important', 'book']);
 const CALLOUT_LABEL = { note: 'Note', info: 'Info', tip: 'Tip', warning: 'Warning', important: 'Important', book: 'Reference' };
 
@@ -43,6 +45,16 @@ function renderMarkdown(md) {
       },
       code({ text, lang }) {
         const language = (lang || '').trim().split(/\s+/)[0].toLowerCase();
+        if (language === 'archify') {
+          // ```archify  first line: diagram name in diagrams/archify/, rest: description for screen readers
+          const [first = '', ...rest] = text.trim().split('\n');
+          const name = first.trim();
+          if (!/^[a-z0-9][a-z0-9-]*$/.test(name)) throw new Error(`archify block: bad diagram name "${name}"`);
+          archify.add(name);
+          const desc = rest.join(' ').replace(/\s+/g, ' ').trim() || name;
+          return `<figure class="diagram archify"><iframe src="/assets/archify/${name}.embed.html?theme=light" data-archify="${name}" title="${esc(desc)}" loading="lazy"></iframe>`
+            + `<figcaption><a href="/assets/archify/${name}.html" target="_blank" rel="noopener">Zoom</a></figcaption></figure>\n`;
+        }
         if (language === 'mermaid') {
           hasMermaid = true;
           return `<figure class="diagram"><pre class="mermaid" data-src="${esc(text)}">${esc(text)}</pre></figure>\n`;
@@ -179,6 +191,42 @@ async function assetVersion() {
   return h.digest('hex').slice(0, 8);
 }
 
+// Archify viewer with its chrome hidden for embedding. Motion follows the viewer's own default (Still) until the reader
+// picks Live in the full viewer, which Archify remembers. Archify's own ?embed=1 mode would never animate, so the
+// article copy uses this instead. The untouched file is published too, for the "Zoom" popup.
+const ARCHIFY_EMBED_HEAD = `<script>document.documentElement.setAttribute('data-site-embed','');</script>
+<style>
+html[data-site-embed] body{min-height:0;padding:0;overflow:hidden;background-image:none}
+html[data-site-embed] :is(.toolbar,.header,.cards,.diagram-nav,.overview-map,.focus-chip,.route-probe,.semantic-lens,.diagram-guide,.node-finder,.node-outline){display:none!important}
+html[data-site-embed] .container{max-width:none}
+html[data-site-embed] .diagram-container{margin:0;padding:.5rem;min-height:0!important;overflow:hidden!important;border:0;border-radius:0;box-shadow:none}
+html[data-site-embed] .diagram-container>svg{width:100%!important;min-width:0!important;height:auto!important}
+</style>`;
+
+// Full viewer (Zoom popup / new tab): Export drawn as a quiet capsule like the other toolbar controls, instead of
+// Archify's inverted primary button (black in light, white in dark). Placed in <head>, so the viewer's later
+// stylesheet would win at equal specificity; the html prefix makes these rules win.
+const ARCHIFY_FULL_HEAD = `<style>
+html .toolbar #btn-export{color:var(--text-muted);font-weight:500}
+html .toolbar #btn-export::before{border:1px solid color-mix(in srgb,var(--panel-border) 85%,transparent);background:color-mix(in srgb,var(--panel) 78%,transparent);box-shadow:0 1px 2px rgba(15,23,42,.04),0 8px 20px -14px rgba(15,23,42,.22)}
+html .toolbar #btn-export:hover,html .toolbar #btn-export[aria-expanded="true"]{color:var(--text)}
+html .toolbar #btn-export:hover::before,html .toolbar #btn-export[aria-expanded="true"]::before{background:color-mix(in srgb,var(--text) 8%,var(--panel))}
+</style>`;
+
+async function emitArchify() {
+  if (!archify.size) return;
+  const out = path.join(DIST, 'assets', 'archify');
+  await mkdir(out, { recursive: true });
+  for (const name of archify) {
+    let html;
+    try { html = await readFile(path.join(ARCHIFY, `${name}.html`), 'utf8'); }
+    catch { throw new Error(`archify block: diagrams/archify/${name}.html not found (run Archify finalize first)`); }
+    if (!html.includes('<head>')) throw new Error(`archify: no <head> in ${name}.html`);
+    await writeFile(path.join(out, `${name}.html`), html.replace('<head>', `<head>\n${ARCHIFY_FULL_HEAD}`));
+    await writeFile(path.join(out, `${name}.embed.html`), html.replace('<head>', `<head>\n${ARCHIFY_EMBED_HEAD}`));
+  }
+}
+
 async function main() {
   const data = await loadSite();
   const v = await assetVersion();
@@ -186,6 +234,7 @@ async function main() {
   await mkdir(DIST, { recursive: true });
   await cp(path.join(SRC, 'assets'), path.join(DIST, 'assets'), { recursive: true });
   await writeFile(path.join(DIST, '.nojekyll'), '');
+  await emitArchify();
 
   const ctx = { ...data, v };
   const render = (opts) => page(ctx, opts);

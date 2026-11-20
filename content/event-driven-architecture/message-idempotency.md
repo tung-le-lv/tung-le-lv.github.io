@@ -6,11 +6,6 @@ updated: 2024-10-05
 order: 3
 ---
 
-> [!TIP] The short version
-> Assume every message can arrive **more than once**. Either make the operation **idempotent** (handling it twice has the same effect as handling it once), or **record the ids of the messages you have processed** and discard repeats. Do the recording in the same transaction as the business change.
->
-> The second approach is what is often called the **Inbox pattern** (its id-tracking form).
-
 ## Context
 
 When the system is working normally, a message broker that guarantees **at-least-once delivery** delivers each message only once. But a failure of the client, the network or the broker can result in a message being delivered several times.

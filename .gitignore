@@ -1,3 +1,10 @@
 node_modules
 dist
 .DS_Store
+
+# Archify run receipts (contain local absolute paths)
+diagrams/archify/*.finalize.json
+diagrams/archify/*.finalize-summary.json
+diagrams/archify/*.browser-check.json
+diagrams/archify/*.delivery.json
+diagrams/archify/review-*/

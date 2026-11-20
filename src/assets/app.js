@@ -9,7 +9,7 @@ const isDark = () => root.dataset.theme === 'dark'; // light is the default; dar
 /* ---------------- Theme ---------------- */
 $('.theme-btn').addEventListener('click', () => {
   const next = isDark() ? 'light' : 'dark';
-  const apply = () => { root.dataset.theme = next; try { localStorage.setItem('theme', next); } catch {} renderDiagrams(); };
+  const apply = () => { root.dataset.theme = next; try { localStorage.setItem('theme', next); } catch {} renderDiagrams(); setupArchify(); };
   document.startViewTransition && !reduceMotion.matches ? document.startViewTransition(apply) : apply();
 });
 
@@ -26,7 +26,7 @@ window.visualViewport?.addEventListener('resize', setAppHeight);
 let lockedAt = null;
 function syncLock() {
   const cl = document.body.classList;
-  const want = cl.contains('nav-open') || cl.contains('search-open') || cl.contains('lb-open');
+  const want = cl.contains('nav-open') || cl.contains('search-open') || cl.contains('lb-open') || cl.contains('ax-open');
   if (want && lockedAt === null) {
     lockedAt = scrollY;
     document.body.style.top = `-${lockedAt}px`;
@@ -124,8 +124,104 @@ function initPage() {
   });
 
   renderDiagrams();
+  setupArchify();
   onScroll();
 }
+
+/* ---------------- Archify (live diagram in an iframe; follows the site theme, sized to its content) ---------------- */
+function setupArchify() {
+  const theme = isDark() ? 'dark' : 'light';
+  $$('iframe[data-archify]').forEach((f) => {
+    const src = `/assets/archify/${f.dataset.archify}.embed.html?theme=${theme}`;
+    if (f.getAttribute('src') !== src) f.setAttribute('src', src);
+    if (!f.dataset.fit) { f.dataset.fit = '1'; f.addEventListener('load', () => fitArchify(f)); }
+    fitArchify(f);
+  });
+}
+function fitArchify(f) {
+  try {
+    const svg = f.contentDocument?.querySelector('.diagram-container > svg');
+    const h = svg && Math.ceil(svg.getBoundingClientRect().bottom + 8);
+    if (h > 0) f.style.height = `${h}px`;
+  } catch {} // not same-origin: keep the CSS height
+}
+addEventListener('resize', () => $$('iframe[data-archify]').forEach(fitArchify));
+
+// "Zoom" shows the full viewer in a popup on this page. Modified clicks (new tab) and
+// no-JS keep the plain link.
+let ax = null, axOpener = null;
+function buildArchify() {
+  ax = document.createElement('div');
+  ax.id = 'archify-pop';
+  ax.hidden = true;
+  ax.setAttribute('role', 'dialog');
+  ax.setAttribute('aria-modal', 'true');
+  ax.setAttribute('aria-label', 'Interactive diagram');
+  ax.innerHTML = `<div class="ax-backdrop"></div>
+    <div class="ax-panel"><iframe title="Interactive diagram"></iframe></div>
+    <button type="button" class="ax-close" aria-label="Close diagram" title="Close (Esc)">&times;</button>`;
+  document.body.appendChild(ax);
+  $('.ax-close', ax).addEventListener('click', closeArchify);
+  $('.ax-backdrop', ax).addEventListener('click', closeArchify);
+  // Esc pressed while the focus is inside the diagram never reaches this page, so listen in the frame too.
+  $('iframe', ax).addEventListener('load', (e) => {
+    try { e.target.contentWindow.addEventListener('keydown', (k) => { if (k.key === 'Escape' && !k.defaultPrevented) closeArchify(); }); } catch {}
+    axInnerClose(true);
+  });
+}
+// Put the close button into the viewer's own toolbar, after Export, so the popup needs no extra margin for it.
+// If the toolbar can't be found, the button outside the panel stays visible instead.
+function axInnerClose(focus) {
+  let btn = null;
+  try {
+    const doc = $('iframe', ax).contentDocument;
+    btn = doc?.getElementById('site-close');
+    const bar = doc?.querySelector('.toolbar');
+    if (!btn && bar) {
+      const group = doc.createElement('div');
+      group.className = 'toolbar-group';
+      group.innerHTML = '<button id="site-close" type="button" title="Close (Esc)" aria-label="Close diagram" style="font-size:20px;line-height:1">&times;</button>';
+      bar.appendChild(group);
+      // on a phone the extra button would push the toolbar off-screen. Present isn't needed (the popup is already
+      // full-screen there) and neither is the theme switch (the popup follows the site's theme).
+      const style = doc.createElement('style');
+      style.textContent = '@media (max-width: 560px) { #btn-present, #btn-theme { display: none !important; } }';
+      doc.head.appendChild(style);
+      btn = group.firstChild;
+      btn.addEventListener('click', closeArchify);
+    }
+  } catch {}
+  ax.classList.toggle('ax-inner', !!btn);
+  if (focus) (btn || $('.ax-close', ax)).focus({ preventScroll: true });
+}
+function openArchify(link) {
+  if (!ax) buildArchify();
+  axOpener = link;
+  const frame = $('iframe', ax);
+  const url = new URL(link.href, location.href);
+  url.searchParams.set('theme', isDark() ? 'dark' : 'light');
+  const reload = frame.src !== url.href;
+  if (reload) { ax.classList.remove('ax-inner'); frame.src = url.href; }
+  ax.hidden = false;
+  document.body.classList.add('ax-open');
+  syncLock();
+  if (!reduceMotion.matches && ax.animate) ax.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 160 });
+  if (reload) $('.ax-close', ax).focus({ preventScroll: true });   // moves into the toolbar once the frame loads
+  else axInnerClose(true);
+}
+function closeArchify() {
+  if (!ax || ax.hidden) return;
+  const done = () => { ax.hidden = true; document.body.classList.remove('ax-open'); syncLock(); axOpener?.focus?.({ preventScroll: true }); axOpener = null; };
+  if (!reduceMotion.matches && ax.animate) ax.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 150 }).onfinish = done;
+  else done();
+}
+document.addEventListener('click', (e) => {
+  const link = e.target.closest?.('.diagram.archify figcaption a');
+  if (!link || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+  e.preventDefault();
+  openArchify(link);
+});
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && ax && !ax.hidden) { e.stopPropagation(); closeArchify(); } }, true);
 
 /* ---------------- Mermaid ---------------- */
 let mermaidP;
@@ -207,6 +303,7 @@ async function navigate(url, { push = true } = {}) {
     c.replaceWith(document.adoptNode(next));
     closeNav();
     closeLightbox();
+    closeArchify();
     syncLock();   // unlock now, so the scroll-to-top below is not undone by a later restore
     syncSidebar();
     initPage();

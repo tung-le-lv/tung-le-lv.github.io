@@ -6,9 +6,6 @@ updated: 2024-03-06
 order: 2
 ---
 
-> [!TIP] The short version
-> Never "save to the database, then publish to the broker" as two separate steps. Instead, **write the message into an `OUTBOX` table in the same database transaction** as the business change. A separate process reads the outbox and publishes to the broker. The two writes now succeed or fail together.
-
 ## Context
 
 A service often needs to publish a message as part of a transaction that updates its database. For example, services publish domain events when they create business entities.

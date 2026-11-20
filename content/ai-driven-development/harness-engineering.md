@@ -6,8 +6,6 @@ updated: 2026-09-20
 order: 1
 ---
 
-## TL;DR
-
 **Harness engineering is about building everything *around* an AI coding agent that makes its output reliable.**
 
 The key idea: **don't just make the AI smarter; build a better system around it.** The harness provides **guidance before the agent acts** and **feedback after it acts**, creating a continuous self-correction loop.

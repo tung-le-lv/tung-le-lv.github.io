@@ -7,11 +7,6 @@ section: Tactical Design
 order: 1
 ---
 
-> [!TIP] The short version
-> A **Domain Service** is a **stateless** operation in the domain model that holds genuine business logic which doesn't naturally belong to any single Entity or Value Object. Use it only when an operation spans several Aggregates, or would be clumsy to put on any one object. Otherwise the logic belongs on the object.
->
-> It is **not** a coarse-grained SOA/RPC endpoint, and it is **not** an Application Service.
-
 ## What it is, and what it isn't
 
 Domain-Driven Design gives you several things that are all called "service". They live in different places and do different jobs:

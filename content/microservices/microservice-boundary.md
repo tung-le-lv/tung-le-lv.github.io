@@ -7,11 +7,6 @@ section: Patterns
 order: 0
 ---
 
-> [!TIP] The short version
-> A good microservice boundary encloses **one business capability, end to end**: its logic **and** its data. Inside it, a team can change and deploy without asking anyone, and the service keeps working when its neighbours are down. Across it, services talk only through **events and published contracts**.
->
-> Finding boundaries is two separate decisions: **1. Where are the bounded contexts?** (business analysis) and **2. How small should each one be split?** (measurable drivers). Do them in that order.
-
 ## Two decisions, in order
 
 | Decision | The question | Main tools |

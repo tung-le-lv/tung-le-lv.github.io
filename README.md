@@ -6,7 +6,8 @@ Live site: https://tung-le-lv.github.io
 
 ```bash
 npm install     # first time only
-npm run dev     # build the site and serve it at http://localhost:4173
+npm run dev     
+# build the site and serve it at http://localhost:4173
 ```
 
 Open http://localhost:4173. Stop the server with `Ctrl+C`.

@@ -7,14 +7,6 @@ section: Patterns
 order: 2
 ---
 
-> [!TIP] The short version
-> In 2000, Eric Brewer conjectured — and it was later proven — that a distributed data store can give you only two of **Consistency**, **Availability**, and **Partition tolerance** at once. Partition tolerance isn't really a choice — networks fail whether you plan for it or not — so the real decision only shows up **during a partition**, and it's between the other two:
->
-> - **CP** — refuse the request rather than risk stale data.
-> - **AP** — answer anyway, possibly with stale data.
->
-> **CA doesn't exist** for anything that talks over a network. The theorem was framed around a single distributed data store, but it applies to any distributed system that maintains state and answers requests — including a **microservice architecture**, where every service-to-service dependency is its own miniature version of the same trade-off.
-
 ## Definitions
 
 | Property | Meaning |

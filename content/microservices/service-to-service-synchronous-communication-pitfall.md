@@ -7,12 +7,6 @@ section: Common Pitfall
 order: 1
 ---
 
-> [!WARNING] The short version
-> **A synchronous call from one bounded context to another is a design flaw, not a networking problem.**
-> It means the boundary is drawn in the wrong place, or the data is owned by the wrong service. A faster RPC, a retry policy or a circuit breaker treats the symptom. The fix is in the design.
->
-> **Rule of thumb:** *inside* a bounded context, call freely. *Across* bounded contexts, don't call — **own it, replicate it, or orchestrate it.**
-
 ## The scenario
 
 An e-commerce checkout. The **Payment** service needs the customer's **billing address** to charge a card, but that address lives in the **Customer** service's database. The obvious solution is a quick HTTP call:
